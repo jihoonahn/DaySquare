@@ -9,6 +9,9 @@ public struct HomeState: StateType {
     public var homeTitle = Date.now.toString()
     public var addMemoSheetIsPresented = false
     public var editMemoSheetIsPresented = false
+    // UI State
+    public var isDatePickerPresented: Bool = false
+    public var tempSelectedDate: Date = Date()
     // Loaded data
     public var allMemos: [MemosEntity] = []
     public var alarms: [AlarmsEntity] = []

@@ -18,4 +18,8 @@ public enum HomeAction: ActionType {
     case showAllMemos(Bool)
     case showAddMemos(Bool)
     case showEditMemos(Bool)
+    // Date Picker
+    case showDatePicker(Bool)
+    case setTempSelectedDate(Date)
+    case confirmSelectedDate
 }

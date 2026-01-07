@@ -63,6 +63,41 @@ public struct HomeView: View {
                 }
             }
         }
+        .sheet(isPresented: Binding(
+            get: { state.isDatePickerPresented },
+            set: { interface.send(.showDatePicker($0)) }
+        )) {
+            NavigationStack {
+                VStack {
+                    DatePicker(
+                        "",
+                        selection: Binding(
+                            get: { state.tempSelectedDate },
+                            set: { interface.send(.setTempSelectedDate($0)) }
+                        ),
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.graphical)
+                    .tint(JColor.success)
+                    Spacer()
+                }
+                .padding()
+                .navigationTitle("날짜 선택")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("취소") {
+                            interface.send(.showDatePicker(false))
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("적용") {
+                            interface.send(.confirmSelectedDate)
+                        }
+                    }
+                }
+            }
+        }
     }
     
     // MARK: - Header
@@ -81,10 +116,15 @@ public struct HomeView: View {
                     .glassEffect(.clear.interactive(), in: .circle)
             }
             
-            VStack(spacing: 6) {
-                Text(state.currentDisplayDate.toString())
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(JColor.textPrimary)
+            Button(action: {
+                interface.send(.showDatePicker(true))
+            }) {
+                VStack(spacing: 6) {
+                    Text(state.currentDisplayDate.toString())
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundStyle(JColor.textPrimary)
+                }
+                .contentShape(Rectangle())
             }
             .frame(maxWidth: .infinity, alignment: .center)
             

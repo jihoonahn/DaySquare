@@ -308,6 +308,29 @@ public struct HomeReducer: Reducer {
                 state.homeTitle = newDate.toString()
             }
             return []
+            
+        // MARK: - Date Picker
+        case .showDatePicker(let isPresented):
+            state.isDatePickerPresented = isPresented
+            if isPresented {
+                state.tempSelectedDate = state.currentDisplayDate
+            }
+            return []
+            
+        case .setTempSelectedDate(let date):
+            state.tempSelectedDate = date
+            return []
+            
+        case .confirmSelectedDate:
+            let calendar = Calendar.current
+            let newDate = calendar.startOfDay(for: state.tempSelectedDate)
+            let currentDate = calendar.startOfDay(for: state.currentDisplayDate)
+            if !calendar.isDate(newDate, inSameDayAs: currentDate) {
+                state.currentDisplayDate = newDate
+                state.homeTitle = newDate.toString()
+            }
+            state.isDatePickerPresented = false
+            return []
         case let .showAllMemos(isNavigated):
             state.navigateToAllMemo = isNavigated
             return [
