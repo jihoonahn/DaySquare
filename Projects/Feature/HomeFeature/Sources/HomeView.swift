@@ -4,7 +4,6 @@ import RefineUIIcons
 import Rex
 import BaseFeature
 import HomeFeatureInterface
-import MemosFeatureInterface
 import Designsystem
 import Dependency
 import Localization
@@ -97,6 +96,7 @@ public struct HomeView: View {
                     }
                 }
             }
+            .environment(\.locale, Locale(identifier: LocalizationController.shared.languageCode))
         }
     }
     
@@ -139,11 +139,6 @@ public struct HomeView: View {
                     .glassEffect(.clear.interactive(), in: .circle)
             }
         }
-    }
-    
-    // MARK: - Constants
-    private enum TimelineConstants {
-        static let headerTopPadding: CGFloat = 100
     }
     
     // MARK: - Current Day Timeline
@@ -189,7 +184,7 @@ public struct HomeView: View {
         }
         .frame(height: timelineData.totalHeight)
         .frame(maxWidth: .infinity)
-        .padding(.top, TimelineConstants.headerTopPadding)
+        .padding(.top, 100)
     }
     
     // MARK: - Timeline Background

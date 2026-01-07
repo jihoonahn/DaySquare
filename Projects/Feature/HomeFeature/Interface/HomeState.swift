@@ -7,8 +7,6 @@ import SchedulesDomainInterface
 
 public struct HomeState: StateType {
     public var homeTitle = Date.now.toString()
-    public var addMemoSheetIsPresented = false
-    public var editMemoSheetIsPresented = false
     // UI State
     public var isDatePickerPresented: Bool = false
     public var tempSelectedDate: Date = Date()
@@ -17,8 +15,6 @@ public struct HomeState: StateType {
     public var alarms: [AlarmsEntity] = []
     public var schedules: [SchedulesEntity] = []
     public var isLoading: Bool = false
-    public var navigateToAllMemo: Bool = false
-    public var presentedAddMemo: Bool = false
     // Infinite scroll
     public var currentDisplayDate: Date = Date()
     public var isLoadingNextDay: Bool = false

@@ -10,8 +10,6 @@ import LoginFeatureInterface
 import LoginFeature
 import MainFeatureInterface
 import MainFeature
-import MemosFeatureInterface
-import MemosFeature
 import MotionFeatureInterface
 import MotionFeature
 import HomeFeatureInterface
@@ -332,13 +330,6 @@ public class AppDependencies {
                 usersUseCase: container.resolve(UsersUseCase.self),
                 localizationUseCase: container.resolve(LocalizationUseCase.self),
                 notificationUseCase: container.resolve(NotificationUseCase.self)
-            )
-        }
-
-        container.register(MemoFactory.self) {
-            return MemoFactoryImpl.create(
-                memosUseCase: container.resolve(MemosUseCase.self),
-                usersUseCase: container.resolve(UsersUseCase.self)
             )
         }
 

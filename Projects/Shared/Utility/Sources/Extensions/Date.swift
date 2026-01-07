@@ -1,11 +1,18 @@
 import Foundation
 
 extension Date {
-     public func toString(format: String = "yyyy년 MM월 dd일") -> String {
+     public func toString(format: String? = nil) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
-        formatter.dateFormat = format
+        formatter.locale = Locale(identifier: "en_US")
+        formatter.timeZone = TimeZone.current
+        
+        if let format = format {
+            formatter.dateFormat = format
+        } else {
+            formatter.dateStyle = .long
+            formatter.timeStyle = .none
+        }
+        
         return formatter.string(from: self)
     }
 

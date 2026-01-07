@@ -6,12 +6,6 @@ public enum RootEvent: EventType {
     case logout
 }
 
-public enum MemoEvent: EventType {
-    case allMemo
-    case addMemo
-    case editMemo
-}
-
 public enum AlarmEvent: EventType {
     case triggered(alarmId: UUID, executionId: UUID?)
     case stopped(alarmId: UUID)

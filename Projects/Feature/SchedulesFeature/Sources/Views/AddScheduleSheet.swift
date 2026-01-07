@@ -186,6 +186,7 @@ struct AddScheduleSheet: View {
             }
             .navigationTitle("ScheduleAddNavigationTitle".localized())
             .navigationBarTitleDisplayMode(.inline)
+            .environment(\.locale, Locale(identifier: LocalizationController.shared.languageCode))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("CommonCancel".localized()) {

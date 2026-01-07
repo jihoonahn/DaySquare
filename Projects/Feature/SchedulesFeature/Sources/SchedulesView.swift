@@ -281,4 +281,3 @@ private struct ScheduleRow: View {
         return String(format: "%02d:%02d", hour, minute)
     }
 }
-

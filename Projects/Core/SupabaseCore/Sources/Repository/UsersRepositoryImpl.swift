@@ -13,7 +13,7 @@ public final class UsersRepositoryImpl: UsersRepository {
     
     public func fetchCurrentUser() async throws -> UsersEntity? {
         do {
-            return try await usersService.fetchCurrentUser()
+        return try await usersService.fetchCurrentUser()
         } catch {
             // 세션이 없거나 만료된 경우 nil을 반환
             // Supabase AuthError 또는 네트워크 오류 등의 경우 nil 반환

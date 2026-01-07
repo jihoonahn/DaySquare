@@ -25,7 +25,6 @@ struct WithDay: Module {
                     .feature(target: "MainFeature"),
                     .feature(target: "HomeFeature"),
                     .feature(target: "MotionFeature"),
-                    .feature(target: "MemosFeature"),
                     .feature(target: "AlarmsFeature"),
                     .feature(target: "SchedulesFeature"),
                     .feature(target: "SettingsFeature"),
