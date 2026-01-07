@@ -23,6 +23,7 @@ public final class NotificationUseCaseImpl: NotificationUseCase {
         await repository.updatePermissions(enabled: enabled)
         if !enabled {
             await repository.clearFallbackNotifications()
+            await repository.clearScheduleNotifications()
         }
     }
     

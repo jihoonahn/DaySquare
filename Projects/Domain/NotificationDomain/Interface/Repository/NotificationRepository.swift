@@ -7,4 +7,5 @@ public protocol NotificationRepository {
     func updatePermissions(enabled: Bool) async
     func scheduleFallbackNotifications(for alarms: [AlarmsEntity]) async
     func clearFallbackNotifications() async
+    func clearScheduleNotifications() async
 }

@@ -1,23 +1,23 @@
 import Foundation
-import AlarmDomainInterface
+import AlarmsDomainInterface
 import Dependency
 
-public final class AlarmUseCaseImpl: AlarmUseCase {
-    private let alarmRepository: AlarmRepository
+public final class AlarmUseCaseImpl: AlarmsUseCase {
+    private let alarmRepository: AlarmsRepository
 
-    public init(alarmRepository: AlarmRepository) {
+    public init(alarmRepository: AlarmsRepository) {
         self.alarmRepository = alarmRepository
     }
     
-    public func fetchAll(userId: UUID) async throws -> [AlarmEntity] {
+    public func fetchAll(userId: UUID) async throws -> [AlarmsEntity] {
         return try await alarmRepository.fetchAlarms(userId: userId)
     }
     
-    public func create(_ alarm: AlarmEntity) async throws {
+    public func create(_ alarm: AlarmsEntity) async throws {
         try await alarmRepository.createAlarm(alarm)
     }
     
-    public func update(_ alarm: AlarmEntity) async throws {
+    public func update(_ alarm: AlarmsEntity) async throws {
         try await alarmRepository.updateAlarm(alarm)
     }
     

@@ -8,11 +8,6 @@ struct WakeUpView: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            Text("Wake Up")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
-                .textCase(.uppercase)
-            
             if let metadata = attributes.metadata {
                 if let label = metadata.alarmLabel {
                     Text(label)
@@ -36,4 +31,3 @@ struct WakeUpView: View {
         .padding(.vertical, 8)
     }
 }
-

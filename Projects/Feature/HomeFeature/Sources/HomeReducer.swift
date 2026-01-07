@@ -103,10 +103,44 @@ public struct HomeReducer: Reducer {
                 state.currentDisplayDate = todayStart
             }
             
-            // 스케줄 notification 등록
+            // 미래 스케줄만 필터링하여 notification 등록
+            let now = Date()
+            let futureSchedules = uniqueSchedules.filter { schedule in
+                // 스케줄 날짜와 시작 시간 파싱
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                dateFormatter.timeZone = calendar.timeZone
+                
+                guard let scheduleDate = dateFormatter.date(from: schedule.date) else {
+                    return false
+                }
+                
+                // 시작 시간 파싱 (HH:mm 또는 HH:mm:ss 형식)
+                let timeComponents = schedule.startTime.split(separator: ":").compactMap { Int($0) }
+                guard timeComponents.count >= 2 else {
+                    return false
+                }
+                
+                let hour = timeComponents[0]
+                let minute = timeComponents[1]
+                
+                var dateComponents = calendar.dateComponents([.year, .month, .day], from: scheduleDate)
+                dateComponents.hour = hour
+                dateComponents.minute = minute
+                dateComponents.second = 0
+                
+                guard let scheduleDateTime = calendar.date(from: dateComponents) else {
+                    return false
+                }
+                
+                // 미래 스케줄만 포함
+                return scheduleDateTime > now
+            }
+            
+            // 스케줄 notification 등록 (미래 스케줄만)
             return [
-                Effect { [notificationService, uniqueSchedules] _ in
-                    await notificationService.scheduleNotifications(for: uniqueSchedules)
+                Effect { [notificationService, futureSchedules] _ in
+                    await notificationService.scheduleNotifications(for: futureSchedules)
                 }
             ]
             

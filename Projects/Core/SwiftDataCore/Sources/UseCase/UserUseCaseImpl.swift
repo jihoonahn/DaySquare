@@ -1,16 +1,15 @@
 import Foundation
-import UserDomainInterface
+import UsersDomainInterface
 
-@MainActor
-public final class UserUseCaseImpl: UserUseCase {
+public final class UserUseCaseImpl: UsersUseCase {
 
-    private let userRepository: UserRepository
+    private let userRepository: UsersRepository
     
-    public init(userRepository: UserRepository) {
+    public init(userRepository: UsersRepository) {
         self.userRepository = userRepository
     }
     
-    public func login(provider: String, email: String?, displayName: String?) async throws -> UserEntity {
+    public func login(provider: String, email: String?, displayName: String?) async throws -> UsersEntity {
         return try await userRepository.loginWithOAuth(
             provider: provider,
             email: email,
@@ -18,26 +17,12 @@ public final class UserUseCaseImpl: UserUseCase {
         )
     }
     
-    public func getCurrentUser() async throws -> UserEntity? {
+    public func getCurrentUser() async throws -> UsersEntity? {
         return try await userRepository.fetchCurrentUser()
     }
     
-    public func updateUser(_ user: UserEntity) async throws {
+    public func updateUser(_ user: UsersEntity) async throws {
         return try await userRepository.saveUser(user)
-    }
-
-    public func updateGoals(wakeUp: Date?, sleep: Date?) async throws {
-        if let wakeUp = wakeUp {
-            try await userRepository.updateWakeUpGoal(wakeUp)
-        }
-        
-        if let sleep = sleep {
-            try await userRepository.updateSleepGoal(sleep)
-        }
-    }
-    
-    public func gainExperience(amount: Int) async throws -> UserEntity {
-        return try await userRepository.gainExperience(amount)
     }
 
     public func deleteUser() async throws {

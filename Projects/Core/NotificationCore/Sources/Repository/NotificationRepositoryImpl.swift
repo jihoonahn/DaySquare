@@ -32,4 +32,8 @@ public final class NotificationRepositoryImpl: NotificationRepository {
     public func clearFallbackNotifications() async {
         await service.clearFallbackNotifications()
     }
+    
+    public func clearScheduleNotifications() async {
+        await service.clearScheduleNotifications()
+    }
 }

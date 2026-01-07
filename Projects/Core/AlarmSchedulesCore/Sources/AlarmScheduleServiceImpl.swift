@@ -85,6 +85,7 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
          }
          
          // AlarmPresentation 생성
+         // AlarmKit의 sound를 사용하지 않고, critical sound를 사용하도록 설정
          let alarmLabel = LocalizedStringResource(stringLiteral: alarm.label ?? "Alarm")
          let alert = AlarmPresentation.Alert(title: alarmLabel)
          let presentation = AlarmPresentation(alert: alert)
@@ -101,7 +102,7 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
          let attributes = AlarmAttributes<AlarmScheduleAttributes>(
              presentation: presentation,
              metadata: metadata,
-             tintColor: Color.accentColor
+             tintColor: Color.white
          )
          
          // AppIntent 생성

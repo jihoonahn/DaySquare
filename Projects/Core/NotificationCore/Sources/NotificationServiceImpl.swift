@@ -47,7 +47,12 @@ public final class NotificationServiceImpl: NotificationService {
             let content = UNMutableNotificationContent()
             content.title = alarm.label ?? "알람"
             content.body = "알람 시간이 도래했습니다."
-            content.sound = .default
+            // Critical sound를 사용하여 알람이 계속 울리도록 설정
+            content.sound = .defaultCritical
+            // Critical alert를 위해 interruptionLevel 설정
+            if #available(iOS 15.0, *) {
+                content.interruptionLevel = .critical
+            }
             content.userInfo = [
                 "alarmId": alarm.id.uuidString,
                 "source": "fallback"
@@ -71,17 +76,22 @@ public final class NotificationServiceImpl: NotificationService {
     
     // MARK: - Schedule Notifications
     public func scheduleNotifications(for schedules: [SchedulesEntity]) async {
+        // Notification 설정이 활성화되어 있는지 확인
+        if let isEnabled = try? await loadIsEnabled(), !isEnabled {
+            let center = UNUserNotificationCenter.current()
+            await clearScheduleNotificationsInternal(center: center)
+            return
+        }
+        
         let center = UNUserNotificationCenter.current()
         await clearScheduleNotificationsInternal(center: center)
         
         let granted = await requestAuthorization(center: center)
         guard granted else {
-            print("⚠️ [NotificationService] 스케줄 notification 권한이 없습니다")
             return
         }
         
         let calendar = Calendar.current
-        let now = Date()
         
         print("📅 [NotificationService] 스케줄 notification 등록 시작: \(schedules.count)개")
         
@@ -89,12 +99,6 @@ public final class NotificationServiceImpl: NotificationService {
             // 스케줄 날짜와 시작 시간 파싱
             guard let scheduleDate = parseScheduleDate(schedule.date, startTime: schedule.startTime, calendar: calendar) else {
                 print("⚠️ [NotificationService] 스케줄 날짜 파싱 실패: date=\(schedule.date), startTime=\(schedule.startTime)")
-                continue
-            }
-            
-            // 과거 스케줄은 무시
-            guard scheduleDate > now else {
-                print("⏰ [NotificationService] 과거 스케줄 무시: \(schedule.title) - \(scheduleDate)")
                 continue
             }
             
