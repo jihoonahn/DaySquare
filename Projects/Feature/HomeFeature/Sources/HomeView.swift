@@ -82,16 +82,16 @@ public struct HomeView: View {
                     Spacer()
                 }
                 .padding()
-                .navigationTitle("날짜 선택")
+                .navigationTitle("HomeSelectDateTitle".localized())
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("취소") {
+                        Button("CommonCancel".localized()) {
                             interface.send(.showDatePicker(false))
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("적용") {
+                        Button("CommonApply".localized()) {
                             interface.send(.confirmSelectedDate)
                         }
                     }
@@ -103,7 +103,6 @@ public struct HomeView: View {
     // MARK: - Header
     private var headerView: some View {
         HStack(spacing: 16) {
-            // 이전 날짜 버튼
             Button(action: {
                 let calendar = Calendar.current
                 if let previousDay = calendar.date(byAdding: .day, value: -1, to: state.currentDisplayDate) {
@@ -128,7 +127,6 @@ public struct HomeView: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
             
-            // 다음 날짜 버튼
             Button(action: {
                 let calendar = Calendar.current
                 if let nextDay = calendar.date(byAdding: .day, value: 1, to: state.currentDisplayDate) {
@@ -145,7 +143,7 @@ public struct HomeView: View {
     
     // MARK: - Constants
     private enum TimelineConstants {
-        static let headerTopPadding: CGFloat = 100 // 헤더 하단 여백
+        static let headerTopPadding: CGFloat = 100
     }
     
     // MARK: - Current Day Timeline
@@ -156,7 +154,6 @@ public struct HomeView: View {
             schedules: state.schedules
         )
         
-        // 각 아이템의 메모 개수 계산
         var memoCountsDict: [UUID: Int] = [:]
         for item in items {
             let relatedMemos = TimelineHelper.relatedMemos(for: item, allMemos: state.allMemos)
@@ -178,7 +175,6 @@ public struct HomeView: View {
             timelineBackgroundLine(height: timelineData.totalHeight)
             timelinePeriodDividers(timelineData: timelineData)
             
-            // items와 itemPositions의 길이가 일치하는지 확인
             if items.count == itemPositions.count && !items.isEmpty {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     if index < itemPositions.count {
@@ -208,12 +204,10 @@ public struct HomeView: View {
     
     private func timelinePeriodDividers(timelineData: TimelineCalculator.TimelineData) -> some View {
         return VStack(spacing: 0) {
-            // 오전 구간 (0-12시)
             Rectangle()
                 .fill(Color.clear)
                 .frame(height: timelineData.morningHeight)
             
-            // 12시 구분선
             HStack(spacing: 8) {
                 Rectangle()
                     .fill(JColor.textSecondary.opacity(0.5))
@@ -228,7 +222,6 @@ public struct HomeView: View {
             }
             .padding(.vertical, 4)
             
-            // 오후 구간 (12-24시)
             Rectangle()
                 .fill(Color.clear)
                 .frame(height: timelineData.afternoonHeight)
@@ -251,14 +244,12 @@ public struct HomeView: View {
     // MARK: - Timeline Indicator
     private func timelineIndicatorView(for item: TimelineItem) -> some View {
         VStack(spacing: 0) {
-            // 타임라인 노드 (원형 마커)
             Circle()
                 .frame(width: 15, height: 15)
                 .glassEffect()
                 .frame(width: 50)
                 .padding(.top, 4)
             
-            // 아이템 지속 시간을 나타내는 세로선
             if let endTimeValue = item.endTimeValue {
                 timelineDurationLine(
                     startTime: item.timeValue,

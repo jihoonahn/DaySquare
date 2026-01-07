@@ -2700,6 +2700,42 @@
           }
         }
       }
+    },
+    "HomeSelectDateTitle" : {
+      "comment" : "Title for date picker sheet",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Date"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜 선택"
+          }
+        }
+      }
+    },
+    "CommonApply" : {
+      "comment" : "Common apply button title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "적용"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
