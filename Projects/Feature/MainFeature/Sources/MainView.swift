@@ -5,7 +5,7 @@ import HomeFeatureInterface
 import AlarmsFeatureInterface
 import SchedulesFeatureInterface
 import SettingsFeatureInterface
-import MotionFeatureInterface
+import ShakeFeatureInterface
 import Dependency
 import RefineUIIcons
 import Designsystem
@@ -18,7 +18,7 @@ public struct MainView: View {
     private let alarmsFactory: AlarmFactory
     private let schedulesFactory: SchedulesFactory
     private let settingsFactory: SettingFactory
-    private let motionFactory: MotionFactory
+    private let shakeFactory: ShakeFactory
 
     public init(
         interface: MainInterface
@@ -28,7 +28,7 @@ public struct MainView: View {
         self.alarmsFactory = DIContainer.shared.resolve(AlarmFactory.self)
         self.schedulesFactory = DIContainer.shared.resolve(SchedulesFactory.self)
         self.settingsFactory = DIContainer.shared.resolve(SettingFactory.self)
-        self.motionFactory = DIContainer.shared.resolve(MotionFactory.self)
+        self.shakeFactory = DIContainer.shared.resolve(ShakeFactory.self)
     }
     
     public var body: some View {
@@ -60,14 +60,14 @@ public struct MainView: View {
             }
         }
         .fullScreenCover(isPresented: Binding(
-            get: { state.isShowingMotion },
+            get: { state.isShowingShake },
             set: { isPresented in
-                if !isPresented, let alarmId = state.motionAlarmId {
-                    interface.send(.closeMotion(id: alarmId))
+                if !isPresented, let alarmId = state.shakeAlarmId {
+                    interface.send(.closeShake(id: alarmId))
                 }
             }
         )) {
-            motionFactory.makeView()
+            shakeFactory.makeView()
         }
         .ignoresSafeArea()
         .task {

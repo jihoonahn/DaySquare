@@ -38,9 +38,9 @@ public class MainStore: MainInterface {
                 guard let self = self else { return }
                 switch event {
                 case let .triggered(id, executionId):
-                    self.send(.showMotion(id: id, executionId: executionId))
+                    self.send(.showShake(id: id, executionId: executionId))
                 case let .stopped(alarmId: id):
-                    self.send(.closeMotion(id: id))
+                    self.send(.closeShake(id: id))
                 }
             }
         }

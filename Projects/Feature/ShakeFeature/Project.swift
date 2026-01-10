@@ -2,9 +2,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 import TuistUI
 
-let project = MainFeature().module()
+let project = ShakeFeature().module()
 
-struct MainFeature: Module {
+struct ShakeFeature: Module {
     var body: some Module {
         ProjectContainer(
             name: typeName,
@@ -15,18 +15,16 @@ struct MainFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
+                    .shared(target: "Designsystem"),
+                    .shared(target: "Localization"),
+                    .shared(target: "Dependency"),
                 ]
             )
             Interface(
                 name: typeName,
                 dependencies: [
-                    .external(name: "RefineUIIcons"),
-                    .feature(target: "HomeFeature", type: .interface),
-                    .feature(target: "AlarmsFeature", type: .interface),
-                    .feature(target: "SchedulesFeature", type: .interface),
-                    .feature(target: "SettingsFeature", type: .interface),
-                    .feature(target: "ShakeFeature", type: .interface),
-                    .feature(target: "MissionsFeature", type: .interface)
+                    .domain(target: "UsersDomain", type: .interface),
+                    .domain(target: "ShakeDomain", type: .interface),
                 ]
             )
             Example(

@@ -20,7 +20,7 @@ struct MotionCore: Module {
             Interface(
                 name: typeName,
                 dependencies: [
-                    .domain(target: "MotionDomain", type: .interface)
+                    .domain(target: "ShakeDomain", type: .interface)
                 ]
             )
             Testing(

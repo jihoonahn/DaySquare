@@ -11,15 +11,15 @@ public struct MainReducer: Reducer {
         case .showSheetFlow(let flow):
             state.sheetFlow = flow
             return []
-        case let .showMotion(id, executionId):
-            state.isShowingMotion = true
-            state.motionAlarmId = id
-            state.motionExecutionId = executionId
+        case let .showShake(id, executionId):
+            state.isShowingShake = true
+            state.shakeAlarmId = id
+            state.shakeExecutionId = executionId
             return []
-        case .closeMotion(let id):
-            state.isShowingMotion = false
-            state.motionAlarmId = nil
-            state.motionExecutionId = nil
+        case .closeShake(let id):
+            state.isShowingShake = false
+            state.shakeAlarmId = nil
+            state.shakeExecutionId = nil
             return []
         }
     }

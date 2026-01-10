@@ -10,8 +10,8 @@ import LoginFeatureInterface
 import LoginFeature
 import MainFeatureInterface
 import MainFeature
-import MotionFeatureInterface
-import MotionFeature
+import ShakeFeatureInterface
+import ShakeFeature
 import HomeFeatureInterface
 import HomeFeature
 import AlarmsFeatureInterface
@@ -25,7 +25,7 @@ import SettingsFeature
 import AlarmsDomainInterface
 import AlarmMissionsDomainInterface
 import AlarmExecutionsDomainInterface
-import MotionDomainInterface
+import ShakeDomainInterface
 import MemosDomainInterface
 import UsersDomainInterface
 import UserSettingsDomainInterface
@@ -138,8 +138,8 @@ public class AppDependencies {
             instance: AlarmSchedulesCore.AlarmSchedulesServiceImpl()
         )
         container.registerSingleton(
-            MotionCoreInterface.MotionService.self,
-            instance: MotionCore.MotionServiceImpl()
+            MotionCoreInterface.ShakeService.self,
+            instance: MotionCore.ShakeServiceImpl()
         )
 
         // MARK: - Repositories
@@ -223,9 +223,9 @@ public class AppDependencies {
                 service: container.resolve(NotificationService.self)
             )
         }
-        container.register(MotionRepository.self) {
-            MotionCore.MotionRepositoryImpl(
-                service: container.resolve(MotionCoreInterface.MotionService.self)
+        container.register(ShakeRepository.self) {
+            MotionCore.ShakeRepositoryImpl(
+                service: container.resolve(MotionCoreInterface.ShakeService.self)
             )
         }
 
@@ -270,9 +270,9 @@ public class AppDependencies {
                 repository: container.resolve(AlarmSchedulesRepository.self)
             )
         }
-        container.register(MotionUseCase.self) {
-            MotionUseCaseImpl(
-                repository: container.resolve(MotionRepository.self)
+        container.register(ShakeUseCase.self) {
+            MotionCore.ShakeUseCaseImpl(
+                repository: container.resolve(ShakeRepository.self)
             )
         }
         container.register(LocalizationUseCase.self) {
@@ -287,13 +287,6 @@ public class AppDependencies {
         }
 
         // MARK: - SwiftData Repository
-
-
-        container.register(MotionUseCase.self) {
-            MotionCore.MotionUseCaseImpl(
-                repository: container.resolve(MotionRepository.self)
-            )
-        }
         
         // MARK: - Feature Factories
         container.register(RootFactory.self) {
@@ -333,10 +326,10 @@ public class AppDependencies {
             )
         }
 
-        container.register(MotionFactory.self) {
-            return MotionFactoryImpl.create(
+        container.register(ShakeFactory.self) {
+            return ShakeFactoryImpl.create(
                 usersUseCase: container.resolve(UsersUseCase.self),
-                motionUseCase: container.resolve(MotionUseCase.self),
+                shakeUseCase: container.resolve(ShakeUseCase.self),
                 alarmSchedulesUseCase: container.resolve(AlarmSchedulesUseCase.self),
                 alarmExecutionsUseCase: container.resolve(AlarmExecutionsUseCase.self)
             )
@@ -346,7 +339,7 @@ public class AppDependencies {
             return SchedulesFactoryImpl.create(
                 schedulesUseCase: container.resolve(SchedulesUseCase.self),
                 usersUseCase: container.resolve(UsersUseCase.self),
-                memosUseCase: container.resolve(MemosUseCase.self)
+                memosUseCase: container.resolve(MemosUseCase.self),
             )
         }
 
