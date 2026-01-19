@@ -20,12 +20,14 @@ struct WithDayApp: App {
         WindowGroup {
             rootFactory.makeView()
                 .preferredColorScheme(.dark)
-                .modelContainer(for: [
-                    AlarmsModel.self,
-                    MemosModel.self,
-                    SchedulesModel.self,
-                    UserSettingsModel.self
-                ])
+                .modelContainer(
+                    for: [
+                        AlarmsModel.self,
+                        MemosModel.self,
+                        SchedulesModel.self,
+                        UserSettingsModel.self
+                ]
+            )
         }
     }
 }

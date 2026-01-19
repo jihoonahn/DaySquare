@@ -24,7 +24,7 @@ public struct SplashView: View {
                 Image("launch", bundle: .main)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 82, height: 76)
+                    .frame(width: 100, height: 100)
                     .padding(.top, 27)
                 Spacer()
                 VStack(spacing: 10) {

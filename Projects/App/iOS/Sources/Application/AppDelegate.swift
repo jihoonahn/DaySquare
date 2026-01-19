@@ -47,11 +47,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         print("🔔 [AppDelegate] willPresent - id=\(notification.request.identifier), title=\(content.title), body=\(content.body)")
         handleAlarmNotification(notification: notification)
         
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .sound, .badge, .list])
-        } else {
-            completionHandler([.alert, .sound, .badge])
-        }
+        completionHandler([.banner, .sound, .badge, .list])
     }
     
     // 사용자가 Notification을 탭했을 때

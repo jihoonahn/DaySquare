@@ -256,8 +256,6 @@ struct EditAlarmSheet: View {
     private func dayName(for day: Int) -> String {
         let calendar = Calendar.current
         let weekdaySymbols = calendar.shortWeekdaySymbols
-        // Calendar의 weekday는 1(일요일)부터 시작하므로 day를 그대로 사용
-        // 하지만 우리는 0(일요일), 1(월요일) 형식을 사용하므로 변환 필요
         let calendarDay = day == 0 ? 1 : day + 1
         if calendarDay >= 1 && calendarDay <= 7 {
             return weekdaySymbols[calendarDay - 1]

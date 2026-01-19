@@ -15,7 +15,7 @@ public struct RootState: StateType {
         }
     }
 
-    public var flow: Flow = .splash  // 초기 상태를 loading으로 변경
+    public var flow: Flow = .splash
 
     public init() {}
 }

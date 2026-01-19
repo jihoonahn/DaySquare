@@ -73,7 +73,6 @@ public struct MainView: View {
                 identifier: flow,
                 icon: flow.icon,
                 action: {
-                    // 같은 버튼을 다시 누르면 sheet 닫기, 아니면 열기
                     if state.sheetFlow == flow {
                         interface.send(.showSheetFlow(nil))
                     } else {
