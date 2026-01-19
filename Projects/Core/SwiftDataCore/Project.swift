@@ -20,8 +20,6 @@ struct SwiftDataCore: Module {
                 name: typeName,
                 dependencies: [
                     .domain(target: "AlarmsDomain", type: .interface),
-                    .domain(target: "AlarmMissionsDomain", type: .interface),
-                    .domain(target: "AlarmExecutionsDomain", type: .interface),
                     .domain(target: "UsersDomain", type: .interface),
                     .domain(target: "UserSettingsDomain", type: .interface),
                     .domain(target: "SchedulesDomain", type: .interface),

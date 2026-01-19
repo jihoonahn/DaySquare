@@ -23,9 +23,5 @@ public struct MainState: StateType {
     }
     
     public var sheetFlow: MainState.SheetFlow? = nil
-    public var isShowingShake = false
-    public var shakeAlarmId: UUID?
-    public var shakeExecutionId: UUID?
-
     public init() {}
 }

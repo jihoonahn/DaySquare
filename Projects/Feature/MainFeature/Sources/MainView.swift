@@ -18,7 +18,6 @@ public struct MainView: View {
     private let alarmsFactory: AlarmFactory
     private let schedulesFactory: SchedulesFactory
     private let settingsFactory: SettingFactory
-    private let shakeFactory: ShakeFactory
 
     public init(
         interface: MainInterface
@@ -28,7 +27,6 @@ public struct MainView: View {
         self.alarmsFactory = DIContainer.shared.resolve(AlarmFactory.self)
         self.schedulesFactory = DIContainer.shared.resolve(SchedulesFactory.self)
         self.settingsFactory = DIContainer.shared.resolve(SettingFactory.self)
-        self.shakeFactory = DIContainer.shared.resolve(ShakeFactory.self)
     }
     
     public var body: some View {
@@ -58,16 +56,6 @@ public struct MainView: View {
             case .none:
                 EmptyView()
             }
-        }
-        .fullScreenCover(isPresented: Binding(
-            get: { state.isShowingShake },
-            set: { isPresented in
-                if !isPresented, let alarmId = state.shakeAlarmId {
-                    interface.send(.closeShake(id: alarmId))
-                }
-            }
-        )) {
-            shakeFactory.makeView()
         }
         .ignoresSafeArea()
         .task {

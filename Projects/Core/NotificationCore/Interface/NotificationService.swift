@@ -2,7 +2,7 @@ import Foundation
 import AlarmsDomainInterface
 import SchedulesDomainInterface
 
-public protocol NotificationService {
+public protocol NotificationService: Sendable {
     func saveIsEnabled(_ isEnabled: Bool) async throws
     func loadIsEnabled() async throws -> Bool?
     func updatePermissions(enabled: Bool) async

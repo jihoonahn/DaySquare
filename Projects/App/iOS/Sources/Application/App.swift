@@ -23,9 +23,7 @@ struct WithDayApp: App {
                 .modelContainer(for: [
                     AlarmsModel.self,
                     MemosModel.self,
-                    AlarmExecutionsModel.self,
                     SchedulesModel.self,
-                    AlarmMissionsModel.self,
                     UserSettingsModel.self
                 ])
         }

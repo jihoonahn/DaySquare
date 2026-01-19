@@ -11,16 +11,6 @@ public struct MainReducer: Reducer {
         case .showSheetFlow(let flow):
             state.sheetFlow = flow
             return []
-        case let .showShake(id, executionId):
-            state.isShowingShake = true
-            state.shakeAlarmId = id
-            state.shakeExecutionId = executionId
-            return []
-        case .closeShake(let id):
-            state.isShowingShake = false
-            state.shakeAlarmId = nil
-            state.shakeExecutionId = nil
-            return []
         }
     }
 }

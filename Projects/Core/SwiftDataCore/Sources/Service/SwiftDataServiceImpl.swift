@@ -9,9 +9,7 @@ public final class SwiftDataServiceImpl: SwiftDataService {
         let schema = Schema([
             AlarmsModel.self,
             MemosModel.self,
-            AlarmExecutionsModel.self,
             SchedulesModel.self,
-            AlarmMissionsModel.self,
             UserSettingsModel.self
         ])
         
@@ -34,9 +32,7 @@ public final class SwiftDataServiceImpl: SwiftDataService {
         let schema = Schema([
             AlarmsModel.self,
             MemosModel.self,
-            AlarmExecutionsModel.self,
             SchedulesModel.self,
-            AlarmMissionsModel.self,
             UserSettingsModel.self
         ])
         

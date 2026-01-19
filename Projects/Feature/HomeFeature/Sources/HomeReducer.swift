@@ -3,7 +3,6 @@ import Rex
 import HomeFeatureInterface
 import MemosDomainInterface
 import UsersDomainInterface
-import AlarmExecutionsDomainInterface
 import AlarmsDomainInterface
 import SchedulesDomainInterface
 import NotificationCoreInterface
@@ -13,7 +12,6 @@ import BaseFeature
 public struct HomeReducer: Reducer {
     private let memosUseCase: MemosUseCase
     private let usersUseCase: UsersUseCase
-    private let alarmExecutionsUseCase: AlarmExecutionsUseCase
     private let alarmsUseCase: AlarmsUseCase
     private let schedulesUseCase: SchedulesUseCase
     private let notificationService: NotificationService
@@ -23,7 +21,6 @@ public struct HomeReducer: Reducer {
     public init(
         memosUseCase: MemosUseCase,
         usersUseCase: UsersUseCase,
-        alarmExecutionsUseCase: AlarmExecutionsUseCase,
         alarmsUseCase: AlarmsUseCase,
         schedulesUseCase: SchedulesUseCase,
         notificationService: NotificationService,
@@ -31,7 +28,6 @@ public struct HomeReducer: Reducer {
     ) {
         self.memosUseCase = memosUseCase
         self.usersUseCase = usersUseCase
-        self.alarmExecutionsUseCase = alarmExecutionsUseCase
         self.alarmsUseCase = alarmsUseCase
         self.schedulesUseCase = schedulesUseCase
         self.notificationService = notificationService
@@ -62,9 +58,6 @@ public struct HomeReducer: Reducer {
                         let memos = try await memosTask
                         let alarms = try await alarmsTask
                         let schedules = try await schedulesTask
-                        
-                        // Wake duration은 현재 UseCase에 fetchExecutions가 없으므로 nil로 처리
-                        // TODO: AlarmExecutionsUseCase에 fetchExecutions 메서드 추가 필요
                         let wakeDuration: Int? = nil
                         
                         emitter.send(.setHomeData(
@@ -375,10 +368,6 @@ public struct HomeReducer: Reducer {
     
     private var currentLocale: Locale {
         Locale(identifier: LocalizationController.shared.languageCode)
-    }
-    
-    private static func bestWakeDuration(from executions: [AlarmExecutionsEntity]) -> Int? {
-        executions.compactMap(\.totalWakeDuration).min()
     }
     
     private func formatDateString(_ date: Date) -> String {

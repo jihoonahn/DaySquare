@@ -10,8 +10,6 @@ import LoginFeatureInterface
 import LoginFeature
 import MainFeatureInterface
 import MainFeature
-import ShakeFeatureInterface
-import ShakeFeature
 import HomeFeatureInterface
 import HomeFeature
 import AlarmsFeatureInterface
@@ -23,9 +21,6 @@ import SettingsFeature
 
 // Domain
 import AlarmsDomainInterface
-import AlarmMissionsDomainInterface
-import AlarmExecutionsDomainInterface
-import ShakeDomainInterface
 import MemosDomainInterface
 import UsersDomainInterface
 import UserSettingsDomainInterface
@@ -81,16 +76,6 @@ public class AppDependencies {
                 supabaseService: container.resolve(SupabaseService.self)
             )
         }
-        container.register(AlarmMissionsService.self) {
-            SupabaseCore.AlarmMissionsServiceImpl(
-                supabaseService: container.resolve(SupabaseService.self)
-            )
-        }
-        container.register(AlarmExecutionsService.self) {
-            SupabaseCore.AlarmExecutionsServiceImpl(
-                supabaseService: container.resolve(SupabaseService.self)
-            )
-        }
         container.register(MemosService.self) {
             SupabaseCore.MemosServiceImpl(
                 supabaseService: container.resolve(SupabaseService.self)
@@ -108,14 +93,6 @@ public class AppDependencies {
         container.registerSingleton(
             SwiftDataCoreInterface.AlarmService.self,
             instance: SwiftDataCore.AlarmServiceImpl(container: modelContainer)
-        )
-        container.registerSingleton(
-            SwiftDataCoreInterface.AlarmExecutionsService.self,
-            instance: SwiftDataCore.AlarmExecutionServiceImpl(container: modelContainer)
-        )
-        container.registerSingleton(
-            SwiftDataCoreInterface.AlarmMissionsService.self,
-            instance: SwiftDataCore.AlarmMissionServiceImpl(container: modelContainer)
         )
         container.registerSingleton(
             SwiftDataCoreInterface.MemosService.self,
@@ -137,10 +114,6 @@ public class AppDependencies {
             AlarmSchedulesCoreInterface.AlarmSchedulesService.self,
             instance: AlarmSchedulesCore.AlarmSchedulesServiceImpl()
         )
-        container.registerSingleton(
-            MotionCoreInterface.ShakeService.self,
-            instance: MotionCore.ShakeServiceImpl()
-        )
 
         // MARK: - Repositories
         container.register(UsersRepository.self) {
@@ -156,16 +129,6 @@ public class AppDependencies {
         container.register(AlarmsRepository.self) {
             SupabaseCore.AlarmsRepositoryImpl(
                 alarmsService: container.resolve(AlarmsService.self)
-            )
-        }
-        container.register(AlarmMissionsRepository.self) {
-            SupabaseCore.AlarmMissionsRepositoryImpl(
-                alarmMissionsService: container.resolve(AlarmMissionsService.self)
-            )
-        }
-        container.register(AlarmExecutionsRepository.self) {
-            SupabaseCore.AlarmExecutionRepositoryImpl(
-                alarmExecutionsService: container.resolve(AlarmExecutionsService.self)
             )
         }
         container.register(MemosRepository.self) {
@@ -186,16 +149,6 @@ public class AppDependencies {
         container.register(AlarmsRepository.self) {
             SwiftDataCore.AlarmRepositoryImpl(
                 alarmService: container.resolve(AlarmService.self)
-            )
-        }
-        container.register(AlarmMissionsRepository.self) {
-            SwiftDataCore.AlarmMissionRepositoryImpl(
-                alarmMissionService: container.resolve(AlarmMissionsService.self)
-            )
-        }
-        container.register(AlarmExecutionsRepository.self) {
-            SwiftDataCore.AlarmExecutionRepositoryImpl(
-                alarmExecutionService: container.resolve(AlarmExecutionsService.self)
             )
         }
         container.register(MemosRepository.self) {
@@ -223,11 +176,6 @@ public class AppDependencies {
                 service: container.resolve(NotificationService.self)
             )
         }
-        container.register(ShakeRepository.self) {
-            MotionCore.ShakeRepositoryImpl(
-                service: container.resolve(MotionCoreInterface.ShakeService.self)
-            )
-        }
 
         // MARK: - UseCases
         container.register(UsersUseCase.self) {
@@ -245,16 +193,6 @@ public class AppDependencies {
                 alarmsRepository: container.resolve(AlarmsRepository.self)
             )
         }
-        container.register(AlarmMissionsUseCase.self) {
-            SupabaseCore.AlarmMissionsUseCaseImpl(
-                alarmMissionsRepository: container.resolve(AlarmMissionsRepository.self)
-            )
-        }
-        container.register(AlarmExecutionsUseCase.self) {
-            SupabaseCore.AlarmExecutionsUseCaseImpl(
-                alarmExecutionRepository: container.resolve(AlarmExecutionsRepository.self)
-            )
-        }
         container.register(MemosUseCase.self) {
             SupabaseCore.MemosUseCaseImpl(
                 memosRepository: container.resolve(MemosRepository.self)
@@ -268,11 +206,6 @@ public class AppDependencies {
         container.register(AlarmSchedulesUseCase.self) {
             AlarmScheduleUseCaseImpl(
                 repository: container.resolve(AlarmSchedulesRepository.self)
-            )
-        }
-        container.register(ShakeUseCase.self) {
-            MotionCore.ShakeUseCaseImpl(
-                repository: container.resolve(ShakeRepository.self)
             )
         }
         container.register(LocalizationUseCase.self) {
@@ -323,15 +256,6 @@ public class AppDependencies {
                 usersUseCase: container.resolve(UsersUseCase.self),
                 localizationUseCase: container.resolve(LocalizationUseCase.self),
                 notificationUseCase: container.resolve(NotificationUseCase.self)
-            )
-        }
-
-        container.register(ShakeFactory.self) {
-            return ShakeFactoryImpl.create(
-                usersUseCase: container.resolve(UsersUseCase.self),
-                shakeUseCase: container.resolve(ShakeUseCase.self),
-                alarmSchedulesUseCase: container.resolve(AlarmSchedulesUseCase.self),
-                alarmExecutionsUseCase: container.resolve(AlarmExecutionsUseCase.self)
             )
         }
 
