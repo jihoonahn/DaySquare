@@ -20,7 +20,7 @@ struct TimelineRow: View {
                 memoSection
             }
         }
-        .padding(16)
+        .padding(12)
         .glassEffect(.clear.interactive(), in: .rect(cornerRadius: 16))
     }
     
@@ -62,6 +62,7 @@ struct AlarmContentCard: View {
                 Text(alarm.label?.isEmpty == false ? alarm.label! : "HomeAlarmDefaultLabel".localized())
                     .font(.system(size: 14))
                     .foregroundColor(alarm.label?.isEmpty == false ? JColor.textSecondary : JColor.textSecondary.opacity(0.6))
+                    .lineLimit(2)
             }
             Spacer()
         }
@@ -83,6 +84,7 @@ struct ScheduleContentCard: View {
                 Text(schedule.title)
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(JColor.textPrimary)
+                    .lineLimit(2)
                 
                 HStack(spacing: 4) {
                     Text(schedule.startTime.formatTime())
@@ -98,7 +100,7 @@ struct ScheduleContentCard: View {
                     Text(schedule.description)
                         .font(.system(size: 13))
                         .foregroundColor(JColor.textSecondary.opacity(0.8))
-                        .lineLimit(2)
+                        .lineLimit(3)
                         .padding(.top, 2)
                 }
             }
@@ -120,16 +122,18 @@ struct MemoCard: View {
                 Text(memo.title)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(JColor.textPrimary)
+                    .lineLimit(1)
                 Spacer()
             }
             if !memo.description.isEmpty {
                 Text(memo.description)
                     .font(.system(size: 13))
                     .foregroundColor(JColor.textSecondary)
-                    .lineLimit(3)
+                    .lineLimit(4)
             }
         }
-        .padding(12)
+        .padding(10)
+        .fixedSize(horizontal: false, vertical: true)
         .shadow(color: JColor.warning.opacity(0.2), radius: 8, x: 0, y: 2)
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(JColor.warning.opacity(0.3), lineWidth: 1))
     }

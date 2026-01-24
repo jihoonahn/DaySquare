@@ -286,7 +286,9 @@ struct TimelineCalculator {
             return 0.0
         }
         
-        // 메모 섹션 상단 여백(12) + 메모 카드들(평균 90픽셀) + 메모 카드 간 간격(8 * (개수-1))
-        return 12.0 + CGFloat(memoCount) * 90.0 + CGFloat(max(0, memoCount - 1)) * 8.0
+        // 메모 섹션 상단 여백(12) + 메모 카드들(평균 100-120픽셀) + 메모 카드 간 간격(8 * (개수-1))
+        // 더 큰 높이를 할당하여 텍스트가 긴 경우 대응
+        let baseCardHeight: CGFloat = 120.0 // 이전의 90에서 120으로 증가
+        return 12.0 + CGFloat(memoCount) * baseCardHeight + CGFloat(max(0, memoCount - 1)) * 8.0
     }
 }
