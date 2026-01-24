@@ -132,10 +132,23 @@ public struct SchedulesReducer: Reducer {
                 dateComponents.minute = minute
                 state.endTime = Calendar.current.date(from: dateComponents) ?? Date()
             }
-            state.addMemoWithSchedule = false
-            state.memoContent = ""
             
-            return []
+            // 기존 메모 로드
+            return [
+                Effect { [self] emitter in
+                    do {
+                        let memos = try await memosUseCase.getMemosByScheduleId(scheduleId: schedule.id)
+                        if let memo = memos.first {
+                            emitter.send(.setMemoContent(memo.description, hasContent: true))
+                        } else {
+                            emitter.send(.setMemoContent("", hasContent: false))
+                        }
+                    } catch {
+                        print("⚠️ [SchedulesReducer] 메모 로드 실패: \(error)")
+                        emitter.send(.setMemoContent("", hasContent: false))
+                    }
+                }
+            ]
             
         case .createSchedule(let title, let description, let date, let startTime, let endTime):
             state.errorMessage = nil
@@ -394,6 +407,11 @@ public struct SchedulesReducer: Reducer {
             
         case .memoContentTextFieldDidChange(let text):
             state.memoContent = text
+            return []
+            
+        case .setMemoContent(let content, let hasContent):
+            state.memoContent = content
+            state.addMemoWithSchedule = hasContent
             return []
         }
     }

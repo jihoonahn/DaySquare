@@ -478,9 +478,23 @@ public struct AlarmReducer: Reducer {
             state.label = alarm.label ?? ""
             state.selectedDays = Set(alarm.repeatDays)
             state.isRepeating = !alarm.repeatDays.isEmpty
-            state.addMemoWithAlarm = false
-            state.memoContent = ""
-            return []
+            
+            // 기존 메모 로드
+            return [
+                Effect { [self] emitter in
+                    do {
+                        let memos = try await memosUseCase.getMemosByAlarmId(alarmId: alarm.id)
+                        if let memo = memos.first {
+                            emitter.send(.setMemoContent(memo.description, hasContent: true))
+                        } else {
+                            emitter.send(.setMemoContent("", hasContent: false))
+                        }
+                    } catch {
+                        print("⚠️ [AlarmReducer] 메모 로드 실패: \(error)")
+                        emitter.send(.setMemoContent("", hasContent: false))
+                    }
+                }
+            ]
             
         case .toggleAddMemoWithAlarm(let enabled):
             state.addMemoWithAlarm = enabled
@@ -491,6 +505,11 @@ public struct AlarmReducer: Reducer {
             
         case .memoContentTextFieldDidChange(let text):
             state.memoContent = text
+            return []
+            
+        case .setMemoContent(let content, let hasContent):
+            state.memoContent = content
+            state.addMemoWithAlarm = hasContent
             return []
             
         case .saveAddAlarm:

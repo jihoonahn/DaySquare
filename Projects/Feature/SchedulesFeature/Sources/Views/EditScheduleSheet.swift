@@ -162,7 +162,7 @@ struct EditScheduleSheet: View {
                                         .foregroundColor(JColor.textSecondary)
                                 }
                             }
-                            .tint(JColor.primary)
+                            .tint(JColor.success)
                             
                             if state.addMemoWithSchedule {
                                 TextField("ScheduleMemoContentPlaceholder".localized(), text: Binding(get: {

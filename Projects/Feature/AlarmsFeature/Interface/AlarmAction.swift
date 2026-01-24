@@ -27,4 +27,5 @@ public enum AlarmAction: ActionType {
     // Memo related
     case toggleAddMemoWithAlarm(Bool)
     case memoContentTextFieldDidChange(String)
+    case setMemoContent(String, hasContent: Bool)
 }

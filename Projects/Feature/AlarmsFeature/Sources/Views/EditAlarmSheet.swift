@@ -195,7 +195,7 @@ struct EditAlarmSheet: View {
                                         .foregroundColor(JColor.textSecondary)
                                 }
                             }
-                            .tint(JColor.primary)
+                            .tint(JColor.success)
                             
                             if state.addMemoWithAlarm {
                                 TextField("AlarmMemoContentPlaceholder".localized(), text: Binding(get: {

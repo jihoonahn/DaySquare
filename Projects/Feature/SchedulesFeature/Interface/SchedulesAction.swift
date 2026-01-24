@@ -27,4 +27,5 @@ public enum SchedulesAction: ActionType {
     // Memo related
     case toggleAddMemoWithSchedule(Bool)
     case memoContentTextFieldDidChange(String)
+    case setMemoContent(String, hasContent: Bool)
 }
