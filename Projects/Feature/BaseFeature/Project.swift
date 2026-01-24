@@ -13,6 +13,7 @@ struct BaseFeature: Module {
                 dependencies: [
                     .shared(target: "Dependency"),
                     .shared(target: "Designsystem"),
+                    .shared(target: "Localization"),
                     .shared(target: "Utility")
                 ]
             )

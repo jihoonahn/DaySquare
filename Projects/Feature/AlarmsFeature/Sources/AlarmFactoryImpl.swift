@@ -2,7 +2,6 @@ import SwiftUI
 import Rex
 import AlarmsFeatureInterface
 import AlarmsDomainInterface
-import AlarmSchedulesDomainInterface
 import UsersDomainInterface
 import MemosDomainInterface
 

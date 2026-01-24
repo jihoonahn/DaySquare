@@ -1,5 +1,4 @@
 import Rex
-import UserDomainInterface
 
 public struct LoginState: StateType {
     public var isLoading: Bool = false

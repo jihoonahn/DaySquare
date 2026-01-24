@@ -15,8 +15,12 @@ public enum HomeAction: ActionType {
     case setCurrentDisplayDate(Date)
     case setLoading(Bool)
     case setLoadingNextDay(Bool)
+    /// Calendar View
+    case showCalendarView(Bool)
     // Date Picker
-    case showDatePicker(Bool)
     case setTempSelectedDate(Date)
     case confirmSelectedDate
+    /// Sheet
+    case showAlarmSheet(Bool)
+    case showScheduleSheet(Bool)
 }

@@ -41,8 +41,6 @@ import LocalizationCoreInterface
 import LocalizationCore
 import NotificationCoreInterface
 import NotificationCore
-import MotionCoreInterface
-import MotionCore
 
 import Dependency
 import Localization

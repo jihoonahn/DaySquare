@@ -1,5 +1,4 @@
 import Rex
-import UserDomainInterface
 import LocalizationDomainInterface
 
 public enum SettingAction: ActionType {

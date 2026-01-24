@@ -3,25 +3,23 @@ import RefineUIIcons
 import Foundation
 
 public struct MainState: StateType {
-    public enum SheetFlow: Sendable, Codable, CaseIterable, Identifiable {
-        case alarm
-        case schedule
+    public enum Tab: String, Sendable, Codable, CaseIterable, Identifiable {
+        case home
         case settings
     
         public var id: Self { self }
-    
-        public var icon: RefineUIIcons {
+        
+        public var title: String {
             switch self {
-            case .alarm:
-                return .clockAlarm32Regular
-            case .schedule:
-                return .calendar32Regular
+            case .home:
+                return "홈"
             case .settings:
-                return .settings32Regular
+                return "설정"
             }
         }
     }
-    
-    public var sheetFlow: MainState.SheetFlow? = nil
+
+    public var selectedTab: Tab = .home
+
     public init() {}
 }

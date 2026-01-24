@@ -2,10 +2,7 @@ import SwiftUI
 import Rex
 import MainFeatureInterface
 import HomeFeatureInterface
-import AlarmsFeatureInterface
-import SchedulesFeatureInterface
 import SettingsFeatureInterface
-import ShakeFeatureInterface
 import Dependency
 import RefineUIIcons
 import Designsystem
@@ -15,8 +12,6 @@ public struct MainView: View {
     @State private var state = MainState()
 
     private let homeFactory: HomeFactory
-    private let alarmsFactory: AlarmFactory
-    private let schedulesFactory: SchedulesFactory
     private let settingsFactory: SettingFactory
 
     public init(
@@ -24,62 +19,35 @@ public struct MainView: View {
     ) {
         self.interface = interface
         self.homeFactory = DIContainer.shared.resolve(HomeFactory.self)
-        self.alarmsFactory = DIContainer.shared.resolve(AlarmFactory.self)
-        self.schedulesFactory = DIContainer.shared.resolve(SchedulesFactory.self)
         self.settingsFactory = DIContainer.shared.resolve(SettingFactory.self)
     }
     
     public var body: some View {
-        ZStack {
+        TabView(selection: Binding(
+            get: { state.selectedTab },
+            set: { newTab in
+                interface.send(.selectTab(newTab))
+            }
+        )) {
             homeFactory.makeView()
-            VStack(spacing: 0) {
-                Spacer()
-                TabBar(
-                    items: tabBarItems,
-                    haptic: true
-                )
-            }
+                .tabItem {
+                    Image(refineUIIcon: .home32Regular)
+                }
+                .tag(MainState.Tab.home)
+
+            settingsFactory.makeView()
+                .tabItem {
+                    Image(refineUIIcon: .settings32Regular)
+                }
+                .tag(MainState.Tab.settings)
         }
-        .sheet(item: Binding(
-            get: { state.sheetFlow },
-            set: { newFlow in
-                interface.send(.showSheetFlow(newFlow))
-            }
-        )) { _ in
-            switch state.sheetFlow {
-            case .alarm:
-                alarmsFactory.makeView()
-            case .schedule:
-                schedulesFactory.makeView()
-            case .settings:
-                settingsFactory.makeView()
-            case .none:
-                EmptyView()
-            }
-        }
-        .ignoresSafeArea()
+        .tint(.green)
         .task {
             for await newState in interface.stateStream {
                 await MainActor.run {
                     self.state = newState
                 }
             }
-        }
-    }
-    
-    private var tabBarItems: [TabBarItem<MainState.SheetFlow>] {
-        MainState.SheetFlow.allCases.map { flow in
-            TabBarItem(
-                identifier: flow,
-                icon: flow.icon,
-                action: {
-                    if state.sheetFlow == flow {
-                        interface.send(.showSheetFlow(nil))
-                    } else {
-                        interface.send(.showSheetFlow(flow))
-                    }
-                }
-            )
         }
     }
 }

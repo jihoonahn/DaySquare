@@ -303,14 +303,7 @@ public struct HomeReducer: Reducer {
             return []
             
         // MARK: - Date Picker
-        case .showDatePicker(let isPresented):
-            state.isDatePickerPresented = isPresented
-            if isPresented {
-                state.tempSelectedDate = state.currentDisplayDate
-            }
-            return []
-            
-        case .setTempSelectedDate(let date):
+        case let .setTempSelectedDate(date):
             state.tempSelectedDate = date
             return []
             
@@ -322,7 +315,15 @@ public struct HomeReducer: Reducer {
                 state.currentDisplayDate = newDate
                 state.homeTitle = newDate.toString()
             }
-            state.isDatePickerPresented = false
+            return []
+        case let .showCalendarView(isPresented):
+            state.showCalendarSheet = isPresented
+            return []
+        case let .showAlarmSheet(isPresented):
+            state.showAlarmSheet = isPresented
+            return []
+        case let .showScheduleSheet(isPresented):
+            state.showScheduleSheet = isPresented
             return []
         }
     }

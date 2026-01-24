@@ -1,5 +1,4 @@
 import Rex
-import UserDomainInterface
 
 public enum LoginAction: ActionType {
     case selectToAppleOauth

@@ -6,9 +6,20 @@ import AlarmsDomainInterface
 import SchedulesDomainInterface
 
 public struct HomeState: StateType {
+    public enum SheetType: Identifiable, Sendable, Codable {
+        case alarm
+        case schedule
+        
+        public var id: String {
+            switch self {
+            case .alarm: return "alarm"
+            case .schedule: return "schedule"
+            }
+        }
+    }
+
     public var homeTitle = Date.now.toString()
     // UI State
-    public var isDatePickerPresented: Bool = false
     public var tempSelectedDate: Date = Date()
     // Loaded data
     public var allMemos: [MemosEntity] = []
@@ -18,6 +29,10 @@ public struct HomeState: StateType {
     // Infinite scroll
     public var currentDisplayDate: Date = Date()
     public var isLoadingNextDay: Bool = false
+    public var showCalendarSheet: Bool = false
+    public var showAlarmSheet: Bool = false
+    public var showScheduleSheet: Bool = false
+    public var sheetType: SheetType? = nil
     public init() {}
 }
 

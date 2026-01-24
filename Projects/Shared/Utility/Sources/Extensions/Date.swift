@@ -1,9 +1,9 @@
 import Foundation
 
 extension Date {
-     public func toString(format: String? = nil) -> String {
+    public func toString(format: String? = nil, locale: Locale? = nil) -> String {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
+        formatter.locale = locale ?? Locale(identifier: "en_US")
         formatter.timeZone = TimeZone.current
         
         if let format = format {

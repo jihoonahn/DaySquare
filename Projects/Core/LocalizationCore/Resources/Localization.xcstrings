@@ -1819,6 +1819,60 @@
         }
       }
     },
+    "SettingProfileDeleteAccountConfirm" : {
+      "comment" : "Delete account confirmation alert message",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete your account? This action cannot be undone."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+          }
+        }
+      }
+    },
+    "SettingProfileDeleteAccountConfirmButton" : {
+      "comment" : "Delete account confirmation button title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제"
+          }
+        }
+      }
+    },
+    "SettingProfileDeleteAccountFailed" : {
+      "comment" : "Error message when account deletion fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to delete account. Please try again."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정 삭제에 실패했습니다. 다시 시도해주세요."
+          }
+        }
+      }
+    },
     "SettingProfileEmailPlaceholder" : {
       "comment" : "Email text field placeholder",
       "extractionState" : "manual",
@@ -2733,6 +2787,114 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "적용"
+          }
+        }
+      }
+    },
+    "DateFormatMonthDay" : {
+      "comment" : "Date format for month and day (e.g., January 22 or 1월 22일)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MMMM d"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "M월 d일"
+          }
+        }
+      }
+    },
+    "DateFormatYearMonth" : {
+      "comment" : "Date format for year and month (e.g., January 2024 or 2024년 1월)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MMMM yyyy"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "yyyy년 M월"
+          }
+        }
+      }
+    },
+    "DateFormatWeekday" : {
+      "comment" : "Date format for weekday (e.g., Monday or 월요일)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EEEE"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EEEE"
+          }
+        }
+      }
+    },
+    "DurationHours" : {
+      "comment" : "Duration format for hours only (e.g., 2 hours or 2시간)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d hr"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d시간"
+          }
+        }
+      }
+    },
+    "DurationMinutes" : {
+      "comment" : "Duration format for minutes only (e.g., 30 min or 30분)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d min"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d분"
+          }
+        }
+      }
+    },
+    "DurationHoursMinutes" : {
+      "comment" : "Duration format for hours and minutes (e.g., 2 hr 30 min or 2시간 30분)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d hr %d min"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d시간 %d분"
           }
         }
       }

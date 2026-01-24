@@ -3,6 +3,8 @@ import SwiftUI
 import RefineUIIcons
 import Rex
 import BaseFeature
+import AlarmsFeatureInterface
+import SchedulesFeatureInterface
 import HomeFeatureInterface
 import Designsystem
 import Dependency
@@ -16,8 +18,13 @@ public struct HomeView: View {
     let interface: HomeInterface
     @State private var state = HomeState()
 
+    private let alarmFactory: AlarmFactory
+    private let scheduleFactory: SchedulesFactory
+
     public init(interface: HomeInterface) {
         self.interface = interface
+        self.alarmFactory = DIContainer.shared.resolve(AlarmFactory.self)
+        self.scheduleFactory = DIContainer.shared.resolve(SchedulesFactory.self)
     }
     
     public var body: some View {
@@ -44,13 +51,14 @@ public struct HomeView: View {
                                     ZStack {
                                         Color(.systemBackground).opacity(0.8)
                                     }
-                                    .blur(radius: 30)
+                                        .blur(radius: 30)
                                 )
                         }
                     }
                 }
             }
         }
+        .environment(\.locale, Locale(identifier: LocalizationController.shared.languageCode))
         .navigationBarHidden(true)
         .onAppear {
             interface.send(.viewAppear)
@@ -63,80 +71,70 @@ public struct HomeView: View {
             }
         }
         .sheet(isPresented: Binding(
-            get: { state.isDatePickerPresented },
-            set: { interface.send(.showDatePicker($0)) }
+            get: { state.showAlarmSheet },
+            set: { interface.send(.showAlarmSheet($0))}
         )) {
-            NavigationStack {
-                VStack {
-                    DatePicker(
-                        "",
-                        selection: Binding(
-                            get: { state.tempSelectedDate },
-                            set: { interface.send(.setTempSelectedDate($0)) }
-                        ),
-                        displayedComponents: .date
-                    )
-                    .datePickerStyle(.graphical)
-                    .tint(JColor.success)
-                    Spacer()
-                }
-                .padding()
-                .navigationTitle("HomeSelectDateTitle".localized())
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("CommonCancel".localized()) {
-                            interface.send(.showDatePicker(false))
-                        }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("CommonApply".localized()) {
-                            interface.send(.confirmSelectedDate)
-                        }
-                    }
-                }
-            }
-            .environment(\.locale, Locale(identifier: LocalizationController.shared.languageCode))
+            alarmFactory.makeView()
+        }
+        .sheet(isPresented: Binding(
+            get: { state.showScheduleSheet },
+            set: { interface.send(.showScheduleSheet($0)) }
+        )) {
+            scheduleFactory.makeView()
+        }
+        .sheet(isPresented: Binding(
+            get: { state.showCalendarSheet },
+            set: { interface.send(.showCalendarView($0)) }
+        )) {
+            CalendarView(
+                selectedDate: Binding(
+                    get: { state.currentDisplayDate },
+                    set: { interface.send(.setCurrentDisplayDate($0)) }
+                ),
+                schedules: state.schedules,
+                alarms: state.alarms
+            )
         }
     }
     
     // MARK: - Header
     private var headerView: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             Button(action: {
-                let calendar = Calendar.current
-                if let previousDay = calendar.date(byAdding: .day, value: -1, to: state.currentDisplayDate) {
-                    interface.send(.setCurrentDisplayDate(previousDay))
-                }
+                interface.send(.showCalendarView(true))
             }) {
-                Image(refineUIIcon: .chevronLeft24Regular)
-                    .foregroundColor(JColor.textPrimary)
-                    .frame(width: 40, height: 40)
-                    .glassEffect(.clear.interactive(), in: .circle)
-            }
-            
-            Button(action: {
-                interface.send(.showDatePicker(true))
-            }) {
-                VStack(spacing: 6) {
-                    Text(state.currentDisplayDate.toString())
-                        .font(.system(size: 28, weight: .bold))
+                let locale = Locale(identifier: LocalizationController.shared.languageCode)
+                VStack(spacing: 2) {
+                    Text(state.currentDisplayDate.toString(
+                        format: "DateFormatMonthDay".localized(locale: locale),
+                        locale: locale
+                    ))
+                        .font(.system(size: 24, weight: .semibold))
                         .foregroundStyle(JColor.textPrimary)
+                    Text(state.currentDisplayDate.toString(
+                        format: "DateFormatWeekday".localized(locale: locale),
+                        locale: locale
+                    ))
+                        .font(.system(size: 20))
+                        .foregroundStyle(JColor.textSecondary)
                 }
-                .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity, alignment: .center)
-            
-            Button(action: {
-                let calendar = Calendar.current
-                if let nextDay = calendar.date(byAdding: .day, value: 1, to: state.currentDisplayDate) {
-                    interface.send(.setCurrentDisplayDate(nextDay))
-                }
-            }) {
-                Image(refineUIIcon: .chevronRight24Regular)
-                    .foregroundColor(JColor.textPrimary)
-                    .frame(width: 40, height: 40)
-                    .glassEffect(.clear.interactive(), in: .circle)
+            Spacer()
+            Button {
+                interface.send(.showAlarmSheet(true))
+            } label: {
+                Image(refineUIIcon: .clock28Regular)
+                    .tint(.white)
+                    .padding(6)
+                    .glassEffect()
+            }
+            Button {
+                interface.send(.showScheduleSheet(true))
+            } label: {
+                Image(refineUIIcon: .calendar28Regular)
+                    .tint(.white)
+                    .padding(6)
+                    .glassEffect()
             }
         }
     }
