@@ -149,34 +149,29 @@ private extension SchedulesView {
     var scheduleSections: some View {
         ForEach(state.sortedDates, id: \.self) { date in
             Section {
-                scheduleRows(for: date)
+                ForEach(state.schedules(for: date), id: \.id) { schedule in
+                    ScheduleRow(
+                        schedule: schedule,
+                        onTap: {
+                            interface.send(.showingEditSchedule(schedule))
+                        }
+                    )
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            interface.send(.deleteSchedule(schedule.id))
+                        } label: {
+                            Label("ScheduleActionDelete".localized(), systemImage: "trash")
+                        }
+                    }
+                }
             } header: {
                 Text(formatDateHeader(date))
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(JColor.textSecondary)
                     .textCase(nil)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    func scheduleRows(for date: String) -> some View {
-        ForEach(state.schedules(for: date), id: \.id) { schedule in
-            ScheduleRow(
-                schedule: schedule,
-                onTap: {
-                    interface.send(.showingEditSchedule(schedule))
-                }
-            )
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                Button(role: .destructive) {
-                    interface.send(.deleteSchedule(schedule.id))
-                } label: {
-                    Label("ScheduleActionDelete".localized(), systemImage: "trash")
-                }
             }
         }
     }
@@ -232,18 +227,18 @@ private struct ScheduleRow: View {
         HStack(spacing: 16) {
             // 시간 표시
             VStack(alignment: .leading, spacing: 4) {
-                Text(formatTime(schedule.startTime))
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(JColor.primary)
-                
                 if schedule.startTime != schedule.endTime {
-                    Text(formatTime(schedule.endTime))
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(JColor.textSecondary)
+                    Text("\(schedule.startTime.formatTime()) ~ \(schedule.endTime.formatTime())")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                } else {
+                    // 시작 시간만 표시
+                    Text(schedule.startTime.formatTime())
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
                 }
             }
-            .frame(width: 70, alignment: .leading)
-            
+
             // 스케줄 내용
             VStack(alignment: .leading, spacing: 4) {
                 Text(schedule.title)
@@ -269,15 +264,5 @@ private struct ScheduleRow: View {
         .onTapGesture {
             onTap()
         }
-    }
-    
-    private func formatTime(_ timeString: String) -> String {
-        let components = timeString.split(separator: ":")
-        guard components.count >= 2,
-              let hour = Int(components[0]),
-              let minute = Int(components[1]) else {
-            return timeString
-        }
-        return String(format: "%02d:%02d", hour, minute)
     }
 }

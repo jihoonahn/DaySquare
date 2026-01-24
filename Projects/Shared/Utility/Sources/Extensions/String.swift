@@ -44,11 +44,11 @@ extension String {
         return hour * 60 + minute
     }
     
-    /// 시간 문자열을 "HH:mm" 형식으로 포맷
+    /// 시간 문자열을 "HH:mm" 형식으로 포맷 (예: "1:4" → "01:04", "22:12" → "22:12")
     public func formatTime() -> String {
         let cleanTime = extractTime()
-        let components = cleanTime.split(separator: ":")
-        guard components.count == 2,
+        let components = cleanTime.split(separator: ":", omittingEmptySubsequences: false).map(String.init)
+        guard components.count >= 2,
               let hour = Int(components[0]),
               let minute = Int(components[1]) else { return self }
         return String(format: "%02d:%02d", hour, minute)

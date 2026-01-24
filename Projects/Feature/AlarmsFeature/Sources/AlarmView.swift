@@ -6,6 +6,7 @@ import UsersDomainInterface
 import Designsystem
 import Dependency
 import Localization
+import Utility
 
 public struct AlarmView: View {
     let interface: AlarmInterface
@@ -170,7 +171,7 @@ private struct AlarmRow: View {
     var body: some View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(formatTime(alarm.time))
+                Text(alarm.time.formatTime())
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(alarm.isEnabled ? JColor.textPrimary : JColor.textSecondary)
                 
@@ -205,25 +206,6 @@ private struct AlarmRow: View {
         .onTapGesture {
             onTap()
         }
-    }
-    
-    private func formatTime(_ timeString: String) -> String {
-        let cleanTime: String
-        if timeString.contains(" ") {
-            let parts = timeString.split(separator: " ")
-            cleanTime = parts.count >= 2 ? String(parts[1]) : timeString
-        } else {
-            cleanTime = timeString
-        }
-        
-        let components = cleanTime.split(separator: ":")
-        guard components.count == 2,
-              let hour = Int(components[0]),
-              let minute = Int(components[1]) else {
-            return timeString
-        }
-        
-        return String(format: "%02d:%02d", hour, minute)
     }
     
     private func formatRepeatDays(_ days: [Int]) -> String {
