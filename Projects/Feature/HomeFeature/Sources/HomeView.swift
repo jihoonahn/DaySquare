@@ -147,6 +147,13 @@ public struct HomeView: View {
             schedules: state.schedules
         )
         
-        return SimplifiedTimelineView(items: items, allMemos: state.allMemos)
+        return SimplifiedTimelineView(items: items, allMemos: state.allMemos) { item in
+            switch item.type {
+            case .alarm:
+                interface.send(.showAlarmSheet(true))
+            case .schedule:
+                interface.send(.showScheduleSheet(true))
+            }
+        }
     }
 }

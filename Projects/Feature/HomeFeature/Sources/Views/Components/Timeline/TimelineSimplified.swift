@@ -15,6 +15,7 @@ private let timelinLineWidth: CGFloat = 2
 struct SimplifiedTimelineView: View {
     let items: [TimelineItem]
     let allMemos: [MemosEntity]
+    var onItemTap: ((TimelineItem) -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -28,7 +29,8 @@ struct SimplifiedTimelineView: View {
                     ForEach(0..<12, id: \.self) { hour in
                         TimelineHourSection(
                             items: itemsForHour(hour),
-                            allMemos: allMemos
+                            allMemos: allMemos,
+                            onItemTap: onItemTap
                         )
                     }
                     
@@ -52,7 +54,8 @@ struct SimplifiedTimelineView: View {
                     ForEach(12..<24, id: \.self) { hour in
                         TimelineHourSection(
                             items: itemsForHour(hour),
-                            allMemos: allMemos
+                            allMemos: allMemos,
+                            onItemTap: onItemTap
                         )
                     }
                 }
@@ -88,6 +91,7 @@ struct SimplifiedTimelineView: View {
 struct TimelineHourSection: View {
     let items: [TimelineItem]
     let allMemos: [MemosEntity]
+    var onItemTap: ((TimelineItem) -> Void)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -97,7 +101,9 @@ struct TimelineHourSection: View {
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(items, id: \.id) { item in
-                        TimelineItemRow(item: item, allMemos: allMemos)
+                        TimelineItemRow(item: item, allMemos: allMemos, onTap: {
+                            onItemTap?(item)
+                        })
                     }
                 }
                 .padding(.vertical, 8)
@@ -110,6 +116,7 @@ struct TimelineHourSection: View {
 struct TimelineItemRow: View {
     let item: TimelineItem
     let allMemos: [MemosEntity]
+    var onTap: (() -> Void)?
     
     var body: some View {
         let relatedMemos = TimelineHelper.relatedMemos(for: item, allMemos: allMemos)
@@ -125,6 +132,10 @@ struct TimelineItemRow: View {
             // Content
             TimelineRow(item: item, relatedMemos: relatedMemos)
                 .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap?()
         }
     }
 }
