@@ -1,6 +1,6 @@
 import Foundation
 
-public struct LocalizationEntity: Equatable, Codable, Identifiable {
+public struct LocalizationEntity: Sendable, Equatable, Codable, Identifiable {
     public var languageCode: String
     public var languageLabel: String
     public var updatedAt: Date
