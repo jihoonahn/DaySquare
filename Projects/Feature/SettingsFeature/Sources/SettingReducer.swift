@@ -85,6 +85,27 @@ public struct SettingReducer: Reducer {
             print("Delete User")
             return []
             
+        case .showDeleteAlert(let show):
+            state.showDeleteAlert = show
+            return []
+            
+        case .confirmDeleteUserAccount:
+            state.showDeleteAlert = false
+            return [
+                Effect { emitter in
+                    do {
+                        // Delete from Supabase and SwiftData
+                        try await usersUseCase.deleteUser()
+                        // Publish logout event to navigate to root
+                        await GlobalEventBus.shared.publish(RootEvent.logout)
+                        try? await Task.sleep(nanoseconds: 100_000_000)
+                    } catch {
+                        logger.error("Delete user account failed: \(error)")
+                        emitter.send(.showToast("SettingToastDeleteAccountFailed".localized()))
+                    }
+                }
+            ]
+            
         case .logout:
             return [
                 Effect { emitter in

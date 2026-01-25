@@ -4,6 +4,7 @@ import SettingsFeatureInterface
 import RefineUIIcons
 import Designsystem
 import Localization
+import UIKit
 
 public struct SettingView: View {
     let interface: SettingInterface
@@ -80,12 +81,16 @@ public struct SettingView: View {
                         SettingSection(
                             title: "SettingSectionHelp".localized()
                         ) {
-                            SettingRow(title: "SettingRowNotice".localized(), trailing: {
+                            SettingRow(
+                                title: "SettingRowNotice".localized(),
+                                url: "https://ahnjihoon.notion.site/Announcement-2f14e7f02b6180c19b17cd57a001270f?source=copy_link",
+                                trailing: {
                                 Image(refineUIIcon: .chevronRight16Regular)
                                     .foregroundStyle(.gray)
                             })
                             SettingRow(
                                 title: "SettingRowPrivacyPolicy".localized(),
+                                url: "https://ahnjihoon.notion.site/Privacy-Policy-EN-2f14e7f02b618063bda7e31ae97fd1e9",
                                 trailing: {
                                     Image(refineUIIcon: .chevronRight16Regular)
                                         .foregroundStyle(.gray)
@@ -93,6 +98,7 @@ public struct SettingView: View {
                             )
                             SettingRow(
                                 title: "SettingRowTerms".localized(),
+                                url: "https://ahnjihoon.notion.site/Terms-of-Service-EN-2f14e7f02b61805da640fdc0adb9ca59",
                                 trailing: {
                                     Image(refineUIIcon: .chevronRight16Regular)
                                         .foregroundStyle(.gray)
@@ -158,6 +164,7 @@ public struct SettingView: View {
     @ViewBuilder
     func SettingRow<Destination: View, Trailing: View>(
         title: String,
+        url: String? = nil,
         @ViewBuilder navigationView: () -> Destination = { EmptyView() },
         @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }
     ) -> some View {
@@ -170,6 +177,12 @@ public struct SettingView: View {
                 trailing()
             }
             .padding(.vertical, 8)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                if let urlString = url, let url = URL(string: urlString) {
+                    UIApplication.shared.open(url)
+                }
+            }
         } else {
             NavigationLink(destination: destination) {
                 HStack {

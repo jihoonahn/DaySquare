@@ -12,6 +12,7 @@ public struct SettingState: StateType {
     public var notificationEnabled: Bool = true
     public var toastMessage: String = ""
     public var toastIsPresented: Bool = false
+    public var showDeleteAlert: Bool = false
     
     public init() {}
 }

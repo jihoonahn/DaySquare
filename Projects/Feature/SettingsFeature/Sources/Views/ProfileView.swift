@@ -49,7 +49,7 @@ struct ProfileView: View {
                 .padding(.horizontal, 20)
                 VStack(spacing: 12) {
                     Button(action: {
-                        interface.send(.deleteUserAccount)
+                        interface.send(.showDeleteAlert(true))
                     }) {
                         Text("SettingProfileDeleteAccount".localized())
                     }
@@ -95,6 +95,17 @@ struct ProfileView: View {
                     self.state = newState
                 }
             }
+        }
+        .alert("SettingDeleteAccountTitle".localized(), isPresented: Binding(
+            get: { state.showDeleteAlert },
+            set: { interface.send(.showDeleteAlert($0)) }
+        )) {
+            Button("CommonCancel".localized(), role: .cancel) { }
+            Button("SettingDeleteAccountConfirm".localized(), role: .destructive) {
+                interface.send(.confirmDeleteUserAccount)
+            }
+        } message: {
+            Text("SettingDeleteAccountMessage".localized())
         }
     }
 }
