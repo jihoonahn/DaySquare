@@ -28,7 +28,7 @@ public enum Localization {
     }
     
     private static func localeIdentifier(from locale: Locale) -> String? {
-        if let languageCode = locale.languageCode {
+        if let languageCode = locale.language.languageCode?.identifier {
             return languageCode
         }
         if let identifier = locale.identifier.split(separator: "_").first {

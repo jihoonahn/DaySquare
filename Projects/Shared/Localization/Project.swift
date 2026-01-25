@@ -12,6 +12,7 @@ struct Localization: Module {
         ) {
             Sources(
                 name: typeName,
+                product: .framework,
                 dependencies: [
                     .domain(target: "LocalizationDomain", type: .interface)
                 ]

@@ -1,5 +1,4 @@
 import Rex
-import RefineUIIcons
 import Foundation
 
 public struct MainState: StateType {

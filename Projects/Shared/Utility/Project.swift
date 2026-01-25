@@ -13,6 +13,7 @@ struct Utility: Module {
             Sources(
                 name: typeName,
                 destinations: .iOS,
+                product: .framework,
                 dependencies: [
                     .shared(target: "Dependency")
                 ]

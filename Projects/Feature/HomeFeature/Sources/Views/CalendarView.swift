@@ -32,11 +32,11 @@ struct CalendarView: View {
                     selectedDateScheduleList
                 }
             }
-            .navigationTitle("캘린더")
+            .navigationTitle("CalendarTitle".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("닫기") {
+                    Button("Close".localized()) {
                         dismiss()
                     }
                 }
@@ -85,8 +85,18 @@ struct CalendarView: View {
     }
     
     private var weekdayHeaderView: some View {
-        HStack(spacing: 0) {
-            ForEach(["일", "월", "화", "수", "목", "금", "토"], id: \.self) { weekday in
+        let locale = Locale(identifier: LocalizationController.shared.languageCode)
+        let weekdays = [
+            "WeekdaySun".localized(locale: locale),
+            "WeekdayMon".localized(locale: locale),
+            "WeekdayTue".localized(locale: locale),
+            "WeekdayWed".localized(locale: locale),
+            "WeekdayThu".localized(locale: locale),
+            "WeekdayFri".localized(locale: locale),
+            "WeekdaySat".localized(locale: locale)
+        ]
+        return HStack(spacing: 0) {
+            ForEach(weekdays, id: \.self) { weekday in
                 Text(weekday)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.secondary)
@@ -161,7 +171,7 @@ struct CalendarView: View {
     private var selectedDateScheduleList: some View {
         let locale = Locale(identifier: LocalizationController.shared.languageCode)
         return VStack(alignment: .leading, spacing: 12) {
-            Text("\(selectedDate.toString(format: "DateFormatMonthDay".localized(locale: locale),locale: locale)) 일정")
+            Text("\(selectedDate.toString(format: "DateFormatMonthDay".localized(locale: locale),locale: locale))\("ScheduleLabel".localized(locale: locale))")
                 .font(.system(size: 18, weight: .semibold))
                 .padding(.horizontal)
                 .padding(.top, 16)
@@ -174,7 +184,7 @@ struct CalendarView: View {
                     Image(systemName: "calendar")
                         .font(.system(size: 40))
                         .foregroundColor(.secondary)
-                    Text("일정이 없습니다")
+                    Text("CalendarScheduleEmpty".localized(locale: locale))
                         .font(.system(size: 14))
                         .foregroundColor(.secondary)
                 }
@@ -224,13 +234,14 @@ struct CalendarView: View {
     }
     
     private func alarmRow(_ alarm: AlarmsEntity) -> some View {
-        HStack(spacing: 12) {
+        let locale = Locale(identifier: LocalizationController.shared.languageCode)
+        return HStack(spacing: 12) {
             Circle()
                 .fill(Color.orange)
                 .frame(width: 8, height: 8)
             
             VStack(alignment: .leading, spacing: 2) {
-                Text(alarm.label ?? "알람")
+                Text(alarm.label ?? "HomeAlarmDefaultLabel".localized(locale: locale))
                     .font(.system(size: 15, weight: .medium))
                 Text(alarm.time)
                     .font(.system(size: 12))

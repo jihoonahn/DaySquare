@@ -23,6 +23,10 @@ struct HomeFeature: Module {
                 name: typeName,
                 dependencies: [
                     .domain(target: "UsersDomain", type: .interface),
+                    .domain(target: "MemosDomain", type: .interface),
+                    .domain(target: "AlarmsDomain", type: .interface),
+                    .domain(target: "SchedulesDomain", type: .interface),
+                    .domain(target: "NotificationDomain", type: .interface)
                 ]
             )
             Example(

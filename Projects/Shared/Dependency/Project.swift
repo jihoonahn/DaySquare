@@ -13,6 +13,7 @@ struct Dependency: Module {
             Sources(
                 name: typeName,
                 destinations: .iOS,
+                product: .framework,
                 dependencies: [
                     .external(name: "Rex")
                 ]
