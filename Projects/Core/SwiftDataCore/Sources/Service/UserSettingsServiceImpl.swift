@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 import SwiftDataCoreInterface
 
+@MainActor
 public final class UserSettingsServiceImpl: UserSettingsService {
     private let container: ModelContainer
     
@@ -10,7 +11,7 @@ public final class UserSettingsServiceImpl: UserSettingsService {
     }
     
     public func fetchSettings(userId: UUID) async throws -> UserSettingsModel? {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<UserSettingsModel>(
             predicate: #Predicate { settings in
                 settings.userId == userId
@@ -20,19 +21,19 @@ public final class UserSettingsServiceImpl: UserSettingsService {
     }
     
     public func fetchAllSettings() async throws -> [UserSettingsModel] {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<UserSettingsModel>()
         return try context.fetch(descriptor)
     }
     
     public func saveSettings(_ settings: UserSettingsModel) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         context.insert(settings)
         try context.save()
     }
     
     public func updateSettings(_ settings: UserSettingsModel) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let userId = settings.userId
         let descriptor = FetchDescriptor<UserSettingsModel>(
             predicate: #Predicate { model in

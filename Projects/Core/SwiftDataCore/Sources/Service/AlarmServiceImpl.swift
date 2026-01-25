@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 import SwiftDataCoreInterface
 
+@MainActor
 public final class AlarmServiceImpl: AlarmService {
     private let container: ModelContainer
 
@@ -10,7 +11,7 @@ public final class AlarmServiceImpl: AlarmService {
     }
 
     public func fetchAlarms(userId: UUID) async throws -> [AlarmsModel] {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<AlarmsModel>(
             predicate: #Predicate { alarm in
                 alarm.userId == userId
@@ -21,13 +22,13 @@ public final class AlarmServiceImpl: AlarmService {
     }
 
     public func saveAlarm(_ alarm: AlarmsModel) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         context.insert(alarm)
         try context.save()
     }
 
     public func updateAlarm(_ alarm: AlarmsModel) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let alarmId = alarm.id
         let descriptor = FetchDescriptor<AlarmsModel>(
             predicate: #Predicate { model in
@@ -54,7 +55,7 @@ public final class AlarmServiceImpl: AlarmService {
     }
 
     public func deleteAlarm(id: UUID) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<AlarmsModel>(
             predicate: #Predicate { alarm in
                 alarm.id == id
@@ -68,7 +69,7 @@ public final class AlarmServiceImpl: AlarmService {
     }
 
     public func toggleAlarm(id: UUID, isEnabled: Bool) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<AlarmsModel>(
             predicate: #Predicate { alarm in
                 alarm.id == id

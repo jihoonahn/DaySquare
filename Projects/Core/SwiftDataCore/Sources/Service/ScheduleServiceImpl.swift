@@ -3,6 +3,7 @@ import SwiftData
 import SwiftDataCoreInterface
 import SchedulesDomainInterface
 
+@MainActor
 public final class ScheduleServiceImpl: SchedulesService {
     private let container: ModelContainer
     
@@ -11,7 +12,7 @@ public final class ScheduleServiceImpl: SchedulesService {
     }
 
     public func getSchedules(userId: UUID) async throws -> [SchedulesEntity] {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<SchedulesModel>(
             sortBy: [
                 SortDescriptor(\.userId),
@@ -24,7 +25,7 @@ public final class ScheduleServiceImpl: SchedulesService {
     }
 
     public func getSchedule(id: UUID) async throws -> SchedulesEntity {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<SchedulesModel>(
             predicate: #Predicate { schedule in
                 schedule.id == id
@@ -37,14 +38,14 @@ public final class ScheduleServiceImpl: SchedulesService {
     }
 
     public func createSchedule(_ schedule: SchedulesEntity) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let model = ScheduleDTO.toModel(from: schedule)
         context.insert(model)
         try context.save()
     }
 
     public func updateSchedule(_ schedule: SchedulesEntity) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let scheduleId = schedule.id
         let descriptor = FetchDescriptor<SchedulesModel>(
             predicate: #Predicate { model in
@@ -66,7 +67,7 @@ public final class ScheduleServiceImpl: SchedulesService {
     }
     
     public func deleteSchedule(id: UUID) async throws {
-        let context = await container.mainContext
+        let context = container.mainContext
         let descriptor = FetchDescriptor<SchedulesModel>(
             predicate: #Predicate { schedule in
                 schedule.id == id
