@@ -2898,6 +2898,312 @@
           }
         }
       }
+    },
+    "SettingButtonDeleteAccount" : {
+      "comment" : "Delete account button title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Account"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정 삭제"
+          }
+        }
+      }
+    },
+    "SettingDeleteAccountTitle" : {
+      "comment" : "Delete account confirmation alert title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Account"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정 삭제"
+          }
+        }
+      }
+    },
+    "SettingDeleteAccountMessage" : {
+      "comment" : "Delete account confirmation alert message",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete your account? This action cannot be undone."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정말 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+          }
+        }
+      }
+    },
+    "SettingDeleteAccountConfirm" : {
+      "comment" : "Delete account confirmation button",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제"
+          }
+        }
+      }
+    },
+    "SettingToastDeleteAccountFailed" : {
+      "comment" : "Error message when account deletion fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to delete account. Please try again."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정 삭제에 실패했습니다. 다시 시도해주세요."
+          }
+        }
+      }
+    },
+    "CommonCancel" : {
+      "comment" : "Cancel button text",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소"
+          }
+        }
+      }
+    },
+    "CalendarTitle" : {
+      "comment" : "Calendar view title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캘린더"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "comment" : "Close button title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닫기"
+          }
+        }
+      }
+    },
+    "WeekdaySun" : {
+      "comment" : "Sunday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일"
+          }
+        }
+      }
+    },
+    "WeekdayMon" : {
+      "comment" : "Monday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mon"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "월"
+          }
+        }
+      }
+    },
+    "WeekdayTue" : {
+      "comment" : "Tuesday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tue"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화"
+          }
+        }
+      }
+    },
+    "WeekdayWed" : {
+      "comment" : "Wednesday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wed"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수"
+          }
+        }
+      }
+    },
+    "WeekdayThu" : {
+      "comment" : "Thursday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thu"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목"
+          }
+        }
+      }
+    },
+    "WeekdayFri" : {
+      "comment" : "Friday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fri"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "금"
+          }
+        }
+      }
+    },
+    "WeekdaySat" : {
+      "comment" : "Saturday weekday abbreviation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sat"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "토"
+          }
+        }
+      }
+    },
+    "ScheduleLabel" : {
+      "comment" : "Schedule label suffix",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " Schedule"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " 일정"
+          }
+        }
+      }
+    },
+    "CalendarScheduleEmpty" : {
+      "comment" : "Empty schedule message in calendar view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No schedules"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일정이 없습니다"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
