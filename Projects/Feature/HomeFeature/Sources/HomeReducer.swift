@@ -38,6 +38,12 @@ public struct HomeReducer: Reducer {
         switch action {
         case .viewAppear:
             let today = dateProvider()
+            let calendar = Calendar.current
+            let todayStart = calendar.startOfDay(for: today)
+            // 초기 로드시에만 currentDisplayDate를 오늘로 설정
+            if state.currentDisplayDate == Date() || calendar.isDate(state.currentDisplayDate, inSameDayAs: Date.distantPast) {
+                state.currentDisplayDate = todayStart
+            }
             state.homeTitle = today.toString()
             return [.just(.loadHomeData)]
             
@@ -84,17 +90,13 @@ public struct HomeReducer: Reducer {
             state.allMemos = uniqueMemos.sorted(by: reminderSortPredicate)
             state.alarms = uniqueAlarms.sorted { $0.time < $1.time }
             state.schedules = uniqueSchedules
-            state.homeTitle = dateProvider().toString()
+            // homeTitle은 현재 표시 중인 날짜로 업데이트 (오늘이 아닐 수도 있음)
+            state.homeTitle = state.currentDisplayDate.toString()
             
-            // currentDisplayDate는 초기 로드시에만 설정하고, 이후에는 변경하지 않음
-            // (appendNextDayData에서만 변경)
-            let today = dateProvider()
-            let calendar = Calendar.current
-            let todayStart = calendar.startOfDay(for: today)
-            let currentStart = calendar.startOfDay(for: state.currentDisplayDate)
-            if !calendar.isDate(todayStart, inSameDayAs: currentStart) {
-                state.currentDisplayDate = todayStart
-            }
+            // currentDisplayDate는 변경하지 않음
+            // - 초기 로드는 viewAppear에서 처리
+            // - 사용자가 선택한 날짜는 유지되어야 함
+            // - appendNextDayData/prependPreviousDayData에서만 변경
             
             // 미래 스케줄만 필터링하여 notification 등록
             let now = Date()
