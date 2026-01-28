@@ -76,7 +76,50 @@ Tuist/.build
 
 ### Tuist derived files ###
 graph.dot
+graph.png
 Derived/
 
 ### Tuist managed dependencies ###
 Tuist/Dependencies
+
+### Swift Package Manager ###
+.swiftpm/
+Package.resolved
+
+### Ruby / Bundler ###
+.bundle/
+vendor/bundle
+
+### Fastlane ###
+fastlane/.env
+fastlane/.env.*
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+### Logs ###
+*.log
+*.swp
+*.swo
+*~
+
+### IDE ###
+.idea/
+*.orig
+
+### Build artifacts ###
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.app.dSYM
+*.app.zip
+*.xcarchive
+
+### Playgrounds ###
+timeline.xctimeline
+playground.xcworkspace
+
+### Swift ###
+.swiftpm/
+.build/
