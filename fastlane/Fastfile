@@ -1,8 +1,490 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
 default_platform(:ios)
 
+# 환경 변수 로드
+def load_env_file
+  env_file = File.join(__dir__, ".env.default")
+  if File.exist?(env_file)
+    File.readlines(env_file).each do |line|
+      next if line.strip.empty? || line.start_with?("#")
+      key, value = line.strip.split("=", 2)
+      ENV[key] = value if key && value
+    end
+  end
+end
+
+# 환경 변수 로드
+load_env_file
+
+# 프로젝트 루트 경로 (fastlane 디렉토리의 부모)
+PROJECT_ROOT = File.expand_path("..", __dir__)
+
+# 공통 변수
+APP_IDENTIFIER = ENV["APP_IDENTIFIER"] || "me.jihoon.WithDay"
+WIDGET_IDENTIFIER = "#{APP_IDENTIFIER}.Widget"
+WORKSPACE_NAME = "WithDay.xcworkspace"
+SCHEME_DEV = "WithDay-dev"
+SCHEME_STAGE = "WithDay-stage"
+SCHEME_PROD = "WithDay-prod"
+EXPORT_OPTIONS_PLIST = "fastlane/ExportOptions.plist"
+
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+  # MARK: - Match (인증서 및 프로비저닝 프로파일 관리)
+  
+  desc "Match를 통해 인증서 및 프로비저닝 프로파일 동기화"
+  lane :match_sync do
+    match(
+      type: "appstore",
+      app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER],
+      readonly: true
+    )
+  end
+
+  desc "Match를 통해 새로운 인증서 및 프로비저닝 프로파일 생성"
+  lane :match_new do
+    match(
+      type: "appstore",
+      app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER]
+    )
+  end
+
+  # MARK: - Tuist 프로젝트 생성
+
+  desc "Tuist 프로젝트 생성"
+  lane :generate do
+    Dir.chdir(PROJECT_ROOT) do
+      sh("tuist generate")
+    end
+  end
+
+  desc "Tuist 의존성 설치"
+  lane :install_dependencies do
+    Dir.chdir(PROJECT_ROOT) do
+      sh("tuist install")
+    end
+  end
+
+  desc "Tuist 프로젝트 정리"
+  lane :clean_tuist do
+    Dir.chdir(PROJECT_ROOT) do
+      sh("tuist clean")
+    end
+  end
+
+  # MARK: - 빌드
+
+  desc "개발 환경 빌드"
+  lane :build_dev do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_DEV,
+        configuration: "DEV",
+        export_method: "development",
+        output_directory: "./build",
+        output_name: "WithDay-dev.ipa",
+        clean: true
+      )
+    end
+  end
+
+  desc "스테이징 환경 빌드"
+  lane :build_stage do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_STAGE,
+        configuration: "STAGE",
+        export_method: "app-store",
+        export_options: {
+          method: "app-store",
+          provisioningProfiles: {
+            APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
+            WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
+          }
+        },
+        output_directory: "./build",
+        output_name: "WithDay-stage.ipa",
+        clean: true
+      )
+    end
+  end
+
+  desc "프로덕션 환경 빌드"
+  lane :build_prod do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_PROD,
+        configuration: "PROD",
+        export_method: "app-store",
+        export_options: {
+          method: "app-store",
+          provisioningProfiles: {
+            APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
+            WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
+          }
+        },
+        output_directory: "./build",
+        output_name: "WithDay-prod.ipa",
+        clean: true
+      )
+    end
+  end
+
+  # MARK: - 테스트
+
+  desc "모든 테스트 실행"
+  lane :test do
+    generate
+    
+    Dir.chdir(PROJECT_ROOT) do
+      run_tests(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_DEV,
+        configuration: "DEV",
+        clean: true,
+        code_coverage: true
+      )
+    end
+  end
+
+  desc "특정 스킴 테스트 실행"
+  lane :test_scheme do |options|
+    scheme = options[:scheme] || SCHEME_DEV
+    generate
+    
+    Dir.chdir(PROJECT_ROOT) do
+      run_tests(
+        workspace: WORKSPACE_NAME,
+        scheme: scheme,
+        clean: true,
+        code_coverage: true
+      )
+    end
+  end
+
+  # MARK: - 버전 관리
+
+  desc "버전 번호 증가 (build number)"
+  lane :bump_build_number do
+    generate
+    Dir.chdir(PROJECT_ROOT) do
+      project_file = Dir.glob("*.xcodeproj").first
+      if project_file
+        increment_build_number(xcodeproj: project_file, target: "WithDay")
+      else
+        UI.user_error!("프로젝트 파일을 찾을 수 없습니다. 먼저 'tuist generate'를 실행하세요.")
+      end
+    end
+  end
+
+  desc "버전 번호 설정"
+  lane :set_build_number do |options|
+    build_number = options[:build_number]
+    generate
+    Dir.chdir(PROJECT_ROOT) do
+      project_file = Dir.glob("*.xcodeproj").first
+      if project_file
+        increment_build_number(
+          build_number: build_number,
+          xcodeproj: project_file,
+          target: "WithDay"
+        )
+      else
+        UI.user_error!("프로젝트 파일을 찾을 수 없습니다. 먼저 'tuist generate'를 실행하세요.")
+      end
+    end
+  end
+
+  desc "버전 문자열 증가 (version string)"
+  lane :bump_version do |options|
+    version_number = options[:version]
+    generate
+    Dir.chdir(PROJECT_ROOT) do
+      project_file = Dir.glob("*.xcodeproj").first
+      if project_file
+        increment_version_number(
+          version_number: version_number,
+          xcodeproj: project_file,
+          target: "WithDay"
+        )
+      else
+        UI.user_error!("프로젝트 파일을 찾을 수 없습니다. 먼저 'tuist generate'를 실행하세요.")
+      end
+    end
+  end
+
+  # MARK: - Archive
+
+  desc "개발 환경 Archive 생성"
+  lane :archive_dev do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_DEV,
+        configuration: "DEV",
+        export_method: "development",
+        output_directory: "./build",
+        output_name: "WithDay-dev",
+        clean: true,
+        skip_package_ipa: false
+      )
+    end
+  end
+
+  desc "스테이징 환경 Archive 생성"
+  lane :archive_stage do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_STAGE,
+        configuration: "STAGE",
+        export_method: "app-store",
+        export_options: {
+          method: "app-store",
+          provisioningProfiles: {
+            APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
+            WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
+          }
+        },
+        output_directory: "./build",
+        output_name: "WithDay-stage",
+        clean: true,
+        skip_package_ipa: false
+      )
+    end
+  end
+
+  desc "프로덕션 환경 Archive 생성"
+  lane :archive_prod do
+    generate
+    match_sync
+    
+    Dir.chdir(PROJECT_ROOT) do
+      build_app(
+        workspace: WORKSPACE_NAME,
+        scheme: SCHEME_PROD,
+        configuration: "PROD",
+        export_method: "app-store",
+        export_options: {
+          method: "app-store",
+          provisioningProfiles: {
+            APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
+            WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
+          }
+        },
+        output_directory: "./build",
+        output_name: "WithDay-prod",
+        clean: true,
+        skip_package_ipa: false
+      )
+    end
+  end
+
+  # MARK: - TestFlight 배포
+
+  desc "스테이징 환경 TestFlight 배포"
+  lane :beta_stage do
+    archive_stage
+    upload_to_testflight(
+      skip_waiting_for_build_processing: false,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+  end
+
+  desc "프로덕션 환경 TestFlight 배포"
+  lane :beta_prod do
+    archive_prod
+    upload_to_testflight(
+      skip_waiting_for_build_processing: false,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+  end
+
+  desc "TestFlight 배포 (외부 테스터에게 배포)"
+  lane :beta_external do |options|
+    scheme = options[:scheme] || SCHEME_STAGE
+    
+    if scheme == SCHEME_PROD
+      archive_prod
+    else
+      archive_stage
+    end
+    
+    upload_to_testflight(
+      skip_waiting_for_build_processing: false,
+      distribute_external: true,
+      notify_external_testers: true
+    )
+  end
+
+  # MARK: - App Store 배포
+
+  desc "App Store에 배포"
+  lane :release do
+    generate
+    
+    Dir.chdir(PROJECT_ROOT) do
+      # 프로젝트 파일에서 버전 확인
+      project_file = Dir.glob("*.xcodeproj").first
+      
+      if project_file
+        version = get_version_number(xcodeproj: project_file, target: "WithDay")
+        build_number = get_build_number(xcodeproj: project_file, target: "WithDay")
+      else
+        # 프로젝트 파일이 없으면 기본값 사용
+        version = "1.0"
+        build_number = "1"
+      end
+      
+      UI.message("📱 배포 정보:")
+      UI.message("   Version: #{version}")
+      UI.message("   Build: #{build_number}")
+    end
+    
+    # Archive 생성
+    archive_prod
+    
+    # App Store에 업로드
+    upload_to_app_store(
+      skip_metadata: false,
+      skip_screenshots: false,
+      force: true,
+      submit_for_review: false,
+      automatic_release: false
+    )
+  end
+
+  # MARK: - 유틸리티
+
+  desc "프로젝트 정리"
+  lane :clean do
+    clean_tuist
+    Dir.chdir(PROJECT_ROOT) do
+      sh("rm -rf build")
+      sh("rm -rf DerivedData")
+    end
+    sh("rm -rf ~/Library/Developer/Xcode/DerivedData")
+  end
+
+  desc "코드 사이닝 정보 확인"
+  lane :check_signing do
+    match_sync
+    get_certificates
+    get_provisioning_profile
+  end
+
+  desc "프로젝트 정보 출력"
+  lane :info do
+    workspace_path = File.join(PROJECT_ROOT, WORKSPACE_NAME)
+    
+    # 프로젝트가 생성되어 있지 않으면 생성
+    unless File.exist?(workspace_path)
+      generate
+    end
+    
+    Dir.chdir(PROJECT_ROOT) do
+      # 프로젝트 파일 찾기
+      project_file = Dir.glob("*.xcodeproj").first
+      
+      if project_file
+        version = get_version_number(xcodeproj: project_file, target: "WithDay")
+        build_number = get_build_number(xcodeproj: project_file, target: "WithDay")
+      else
+        # 프로젝트 파일이 없으면 Info.plist에서 읽기
+        info_plist_path = "Projects/App/iOS/Support/Info.plist"
+        version = "1.0"
+        build_number = "1"
+        
+        if File.exist?(info_plist_path)
+          # 간단한 plist 파싱 (CFBundleShortVersionString과 CFBundleVersion 찾기)
+          plist_content = File.read(info_plist_path)
+          if match = plist_content.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/)
+            version = match[1]
+          end
+          if match = plist_content.match(/<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/)
+            build_number = match[1]
+            # $(CURRENT_PROJECT_VERSION) 같은 변수가 있으면 xcconfig에서 읽기
+            if build_number.start_with?("$")
+              xcconfig_path = "Configuration/Shared.xcconfig"
+              if File.exist?(xcconfig_path)
+                xcconfig = File.read(xcconfig_path)
+                if match = xcconfig.match(/CURRENT_PROJECT_VERSION\s*=\s*(\d+)/)
+                  build_number = match[1]
+                end
+              end
+            end
+          end
+        end
+      end
+      
+      UI.message("📱 WithDay 프로젝트 정보")
+      UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+      UI.message("   App Identifier: #{APP_IDENTIFIER}")
+      UI.message("   Widget Identifier: #{WIDGET_IDENTIFIER}")
+      UI.message("   Version: #{version}")
+      UI.message("   Build Number: #{build_number}")
+      UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    end
+  end
+
+  # MARK: - CI/CD
+
+  desc "CI 환경에서 실행되는 전체 파이프라인"
+  lane :ci do
+    # 의존성 설치
+    install_dependencies
+    
+    # 프로젝트 생성
+    generate
+    
+    # 테스트 실행
+    test
+    
+    # 빌드 확인
+    build_dev
+  end
+
+  desc "CD 환경에서 실행되는 배포 파이프라인"
+  lane :cd do |options|
+    environment = options[:environment] || "stage"
+    
+    case environment
+    when "stage"
+      beta_stage
+    when "prod"
+      beta_prod
+    else
+      UI.user_error!("Unknown environment: #{environment}. Use 'stage' or 'prod'")
+    end
   end
 end
