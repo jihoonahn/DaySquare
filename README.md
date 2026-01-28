@@ -1,218 +1,231 @@
 <div align="center">
     <img src="assets/header.svg"></br>
-    <img src="https://img.shields.io/badge/Swift-5.9-f05318.svg" />
-    <img src="https://img.shields.io/badge/tuist-template-blue.svg" />
-    <img alt="GitHub" src="https://img.shields.io/github/license/jihoonahn/designtuist">
+    <img src="https://img.shields.io/badge/Swift-6.0-f05318.svg" />
+    <img src="https://img.shields.io/badge/iOS-17.0+-blue.svg" />
+    <img src="https://img.shields.io/badge/Tuist-4.0+-blue.svg" />
 </div>
 
-# DesignTuist
+# WithDay
 
-**DesignTuist** is a Tuist template for modular architecture. It provides CLI tools to design projects according to your current situation.
+**WithDay**는 알람과 스케줄을 효율적으로 관리할 수 있는 iOS 애플리케이션입니다.
 
-## 🚀 Key Features
+## 🚀 주요 기능
 
-- **Modular Architecture**: Feature, Domain, Core, Shared layer structure
-- **CLI Tools**: 5 commands for project generation, module management, and dependency management
-- **Interactive UI**: User-friendly terminal-based interface
-- **Multi-Environment Support**: Environment-specific configurations for Default, CI, CD
+- **알람 관리**: AlarmKit을 활용한 정확한 알람 스케줄링
+- **스케줄 관리**: 일정 및 메모 관리
+- **OAuth 인증**: Apple Sign In 및 Google Sign In 지원
+- **클라우드 동기화**: Supabase를 통한 데이터 동기화
+- **오프라인 지원**: SwiftData를 활용한 로컬 데이터 저장
+- **위젯 지원**: 홈 화면 위젯 제공
+- **다국어 지원**: 다국어 인터페이스
 
-## 📋 Requirements
+## 📋 요구사항
 
 - macOS 13.0+
-- Swift 6.1+
-- Tuist
+- Xcode 15.0+
+- Swift 6.0+
+- Tuist 4.0+
+- iOS 17.0+ (타겟 디바이스)
 
-## 🛠 Installation
+## 🛠 설치 및 실행
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/jihoonme/designtuist.git
-cd designtuist
-```
-
-2. Build with Swift Package Manager:
+### 1. 저장소 클론
 
 ```bash
-swift build -c release
+git clone https://github.com/jihoonahn/withDay.git
+cd withDay
 ```
 
-3. Run commands:
+### 2. Tuist 설치
 
 ```bash
-# Direct execution with swift run (recommended)
-swift run generate
-
-# Or run built executables directly
-.build/release/generate
-
-# Add to PATH for global use (optional)
-cp .build/release/* /usr/local/bin/
+curl -Ls https://install.tuist.io | bash
 ```
 
-## 📚 Command Usage
-
-> **Note:** All commands should be executed in the format `swift run [command-name]`.
-
-### 1. `generate` - Workspace Generation
-
-Generates an Xcode workspace.
+### 3. 의존성 설치
 
 ```bash
-swift run generate [type] [options]
+tuist install
 ```
 
-**Parameters:**
-
-- `type`: `default`, `CI`, `CD` (default: default)
-- `--path, -p`: Project directory path
-
-**Usage Examples:**
+### 4. 프로젝트 생성
 
 ```bash
-swift run generate                    # Generate default workspace
-swift run generate CI                 # Generate workspace for CI environment
-swift run generate --path ./MyProject # Generate workspace at specific path
+tuist generate
 ```
 
-### 2. `module` - Module Generation
+### 5. 환경 변수 설정
 
-Creates a new module through an interactive UI.
+Xcode Scheme에서 환경 변수를 설정하거나 `.xcconfig` 파일에 추가:
+
+```
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 6. Xcode에서 실행
+
+생성된 `WithDay.xcworkspace` 파일을 열고 실행합니다.
+
+## 🏗 프로젝트 구조
+
+```
+withDay/
+├── Projects/
+│   ├── App/                    # 메인 애플리케이션
+│   │   ├── iOS/                # iOS 앱 소스
+│   │   └── Widget/             # 위젯 익스텐션
+│   ├── Feature/                # Feature 레이어
+│   │   ├── HomeFeature/         # 홈 화면
+│   │   ├── AlarmsFeature/      # 알람 관리
+│   │   ├── SchedulesFeature/   # 스케줄 관리
+│   │   ├── SettingsFeature/    # 설정
+│   │   ├── LoginFeature/        # 로그인
+│   │   ├── SplashFeature/      # 스플래시
+│   │   ├── MainFeature/        # 메인 탭
+│   │   └── RootFeature/        # 루트 네비게이션
+│   ├── Domain/                 # Domain 레이어
+│   │   ├── AlarmsDomain/       # 알람 도메인
+│   │   ├── SchedulesDomain/    # 스케줄 도메인
+│   │   ├── UsersDomain/        # 사용자 도메인
+│   │   └── ...
+│   ├── Core/                   # Core 레이어
+│   │   ├── SupabaseCore/       # Supabase 클라이언트
+│   │   ├── SwiftDataCore/      # SwiftData 로컬 저장소
+│   │   ├── AuthCore/           # 인증 (Apple, Google OAuth)
+│   │   ├── NotificationCore/   # 알림 관리
+│   │   └── AlarmSchedulesCore/ # 알람 스케줄링
+│   └── Shared/                 # Shared 레이어
+│       ├── Dependency/         # DI 컨테이너
+│       ├── Designsystem/       # 디자인 시스템
+│       ├── Localization/       # 다국어 지원
+│       └── Utility/            # 유틸리티
+├── Tuist/                      # Tuist 설정
+│   ├── ProjectDescriptionHelpers/
+│   └── Templates/
+└── Configuration/              # 환경별 설정 파일
+    ├── App/
+    ├── Core/
+    ├── Domain/
+    └── Feature/
+```
+
+## 🏛 아키텍처
+
+WithDay는 **Clean Architecture**와 **Modular Architecture**를 기반으로 구성되어 있습니다.
+
+### 레이어 구조
+
+- **Feature Layer**: SwiftUI Views, Reducers (Rex 프레임워크)
+- **Domain Layer**: 비즈니스 로직, Entities, UseCases
+- **Core Layer**: 외부 서비스 연동 (Supabase, SwiftData, OAuth)
+- **Shared Layer**: 공통 유틸리티 및 디자인 시스템
+
+### 상태 관리
+
+[Rex](https://github.com/pelagornis/swift-rex) 프레임워크를 사용하여 Redux 패턴 기반의 상태 관리를 구현합니다.
+
+### 의존성 주입
+
+`DIContainer`를 통해 모든 의존성을 관리하며, 테스트 가능한 구조를 유지합니다.
+
+자세한 내용은 [DEPENDENCY_GUIDE.md](./DEPENDENCY_GUIDE.md)를 참고하세요.
+
+## 🔧 기술 스택
+
+### 프레임워크 및 라이브러리
+
+- **Tuist**: 프로젝트 생성 및 관리
+- **Rex**: 상태 관리 (Redux 패턴)
+- **Supabase**: 백엔드 및 인증
+- **SwiftData**: 로컬 데이터 저장
+- **AlarmKit**: 알람 스케줄링
+- **RefineUI Icons**: 아이콘 시스템
+
+### 주요 의존성
+
+```swift
+- swift-rex: Redux 패턴 상태 관리
+- supabase-swift: Supabase 클라이언트
+- refineui-system-icons: 시스템 아이콘
+- swift-log: 로깅
+```
+
+## 📱 주요 기능 상세
+
+### 알람 관리
+- AlarmKit을 활용한 정확한 알람 스케줄링
+- 반복 알람 지원
+- 알람 활성화/비활성화
+
+### 스케줄 관리
+- 일정 생성 및 수정
+- 메모 기능
+- 캘린더 뷰
+
+### 인증
+- Apple Sign In
+- Google Sign In (Supabase OAuth)
+- 사용자 프로필 관리
+
+### 데이터 동기화
+- Supabase를 통한 클라우드 동기화
+- SwiftData를 활용한 오프라인 지원
+- 자동 동기화
+
+## 🧪 테스트
 
 ```bash
-swift run module
+# 모든 테스트 실행
+tuist test
+
+# 특정 타겟 테스트
+xcodebuild test -workspace WithDay.xcworkspace -scheme WithDay-dev
 ```
 
-**Features:**
+## 🚀 빌드 및 배포
 
-- Enter module name
-- Select layer (Feature, Domain, Core, Shared)
-- Select components (Sources, Interface, Example, Tests, UITests)
-- Automatic generation via Tuist scaffold
-
-**Usage Flow:**
-
-1. Enter module name
-2. Select layer (Feature/Domain/Core/Shared)
-3. Select components to generate
-4. Execute automatic generation
-
-### 3. `install` - Dependency Installation
-
-Installs Swift Package Manager dependencies.
+### 개발 환경
 
 ```bash
-swift run install <package-name> --version <version> [options]
+tuist generate
+# Xcode에서 WithDay-dev 스킴 선택 후 실행
 ```
 
-**Parameters:**
-
-- `package-name`: GitHub package name (owner/repo format)
-- `--version, -v`: Version to install
-- `--path, -p`: Project directory path
-
-**Usage Examples:**
+### 스테이징 환경
 
 ```bash
-swift run install alamofire/alamofire --version 5.8.1
-swift run install --path ./MyProject rxswift/rxswift --version 6.7.1
+# Xcode에서 WithDay-stage 스킴 선택 후 실행
 ```
 
-### 4. `uninstall` - Dependency Removal
-
-Removes Swift Package Manager dependencies.
+### 프로덕션 환경
 
 ```bash
-swift run uninstall <package-name> [options]
+# Xcode에서 WithDay-prod 스킴 선택 후 Archive
 ```
 
-**Parameters:**
-
-- `package-name`: Package name to remove
-- `--path, -p`: Project directory path
-
-**Usage Examples:**
+### Fastlane
 
 ```bash
-swift run uninstall alamofire
-swift run uninstall --path ./MyProject rxswift
+# Fastlane을 통한 배포 (설정 필요)
+fastlane ios beta
 ```
 
-### 5. `clean` - Project Cleanup
+## 📄 라이선스
 
-Cleans Tuist project.
+이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](./LICENSE) 파일을 참고하세요.
 
-```bash
-swift run clean [options]
-```
-
-**Parameters:**
-
-- `--path, -p`: Project directory path
-
-**Usage Examples:**
-
-```bash
-swift run clean                      # Clean current directory
-swift run clean --path ./MyProject   # Clean specific path
-```
-
-## 🏗 Project Structure
-
-```
-designtuist/
-├── Commands/              # CLI command implementations
-│   ├── Clean/            # clean command
-│   ├── Generate/         # generate command
-│   ├── Install/          # install command
-│   ├── Module/           # module command
-│   ├── Uninstall/        # uninstall command
-│   └── CommandKit/       # Common services and utilities
-├── Configuration/        # Environment-specific configuration files
-├── Projects/            # Project templates
-│   ├── App/             # App project
-│   ├── Core/            # Core layer
-│   ├── Domain/          # Domain layer
-│   ├── Feature/         # Feature layer
-│   └── Shared/          # Shared layer
-└── Tuist/               # Tuist configuration and templates
-    ├── Templates/       # Module templates
-    └── ProjectDescriptionHelpers/
-```
-
-## 🔧 Development
-
-### Dependencies
-
-This project uses the following Swift packages:
-
-- [swift-argument-parser](https://github.com/apple/swift-argument-parser): CLI argument parsing
-- [swift-log](https://github.com/apple/swift-log): Logging
-- [swift-command](https://github.com/pelagornis/swift-command): Command execution
-- [swift-file](https://github.com/pelagornis/swift-file): File system operations
-- [swift-cli](https://github.com/pelagornis/swift-cli): CLI UI components
-
-### Build and Test
-
-```bash
-# Debug build
-swift build
-
-# Release build
-swift build -c release
-
-# Run tests
-swift test
-```
-
-## 🤝 Contributing
+## 🤝 기여
 
 1. Fork this repository
-2. Create a new branch (`git checkout -b feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request
+5. Open a Pull Request
 
-## 📄 License
+## 📚 참고 문서
 
-**DesignTuist** is distributed under the MIT license. See the [LICENSE](/LICENSE) file for more info.
+- [의존성 주입 가이드](./DEPENDENCY_GUIDE.md)
+- [Tuist 문서](https://docs.tuist.io)
+- [Supabase 문서](https://supabase.com/docs)
+- [Rex 문서](https://github.com/pelagornis/swift-rex)
