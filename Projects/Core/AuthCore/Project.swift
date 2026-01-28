@@ -2,9 +2,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 import TuistUI
 
-let project = AlarmSchedulesCore().module()
+let project = AuthCore().module()
 
-struct AlarmSchedulesCore: Module {
+struct AuthCore: Module {
     var body: some Module {
         ProjectContainer(
             name: typeName,
@@ -14,18 +14,13 @@ struct AlarmSchedulesCore: Module {
                 name: typeName,
                 dependencies: [
                     .core(target: typeName, type: .interface),
-                    .sdk(name: "AlarmKit", type: .framework),
-                    .sdk(name: "ActivityKit", type: .framework),
-                    .sdk(name: "AVFoundation", type: .framework),
-                    .shared(target: "Dependency"),
+                    .sdk(name: "AuthenticationServices", type: .framework),
                 ]
             )
             Interface(
                 name: typeName,
                 dependencies: [
-                    .domain(target: "AlarmsDomain", type: .interface),
-                    .sdk(name: "AlarmKit", type: .framework),
-                    .sdk(name: "ActivityKit", type: .framework),
+                    .domain(target: "AuthDomain", type: .interface)
                 ]
             )
             Testing(

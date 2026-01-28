@@ -43,10 +43,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        let content = notification.request.content
-        print("🔔 [AppDelegate] willPresent - id=\(notification.request.identifier), title=\(content.title), body=\(content.body)")
         handleAlarmNotification(notification: notification)
-        
         completionHandler([.banner, .sound, .badge, .list])
     }
     
@@ -56,8 +53,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        let content = response.notification.request.content
-        print("🔔 [AppDelegate] didReceive - id=\(response.notification.request.identifier), title=\(content.title), body=\(content.body), actionIdentifier=\(response.actionIdentifier)")
         handleAlarmNotification(notification: response.notification)
         completionHandler()
     }
@@ -65,10 +60,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
     // 알람 Notification 처리
     private func handleAlarmNotification(notification: UNNotification) {
         let userInfo = notification.request.content.userInfo
-        
-        // userInfo 디버깅
-        let userInfoKeys = Array(userInfo.keys)
-        print("📋 [AppDelegate] userInfo 키: \(userInfoKeys)")
         
         // source 확인 (schedule인 경우 별도 처리)
         if let source = userInfo["source"] as? String, source == "schedule" {
@@ -84,17 +75,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         } else if let alarmIdUUID = userInfo["alarmId"] as? UUID {
             alarmId = alarmIdUUID
         } else {
-            let alarmIdValue = userInfo["alarmId"]
-            print("⚠️ [AppDelegate] 알람 ID를 찾을 수 없음. alarmId 타입: \(type(of: alarmIdValue)), 값: \(String(describing: alarmIdValue))")
             return
         }
         
         guard let finalAlarmId = alarmId else {
-            print("⚠️ [AppDelegate] alarmId가 nil입니다")
             return
         }
-        
-        print("✅ [AppDelegate] alarmId 추출 성공: \(finalAlarmId)")
         
         // executionId 추출 (String 또는 UUID 타입 모두 처리)
         let executionId: UUID?
@@ -107,50 +93,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
             executionId = nil
         }
         
-        if let finalExecutionId = executionId {
-            // executionId가 있으면 그대로 사용
-            print("✅ [AppDelegate] executionId 수신: \(finalExecutionId)")
-            print("🔔 [AppDelegate] 알람 Notification 수신: \(finalAlarmId), executionId: \(finalExecutionId)")
-            
-            Task {
-                await GlobalEventBus.shared.publish(AlarmEvent.triggered(alarmId: finalAlarmId, executionId: finalExecutionId))
-            }
-        } else {
-            print("⚠️ [AppDelegate] executionId가 없음 - GlobalEventBus로 AlarmEvent.triggered 발행하여 AlarmServiceImpl의 triggerAlarm 호출")
-            print("📤 [AppDelegate] GlobalEventBus.publish(AlarmEvent.triggered(alarmId: \(finalAlarmId), executionId: nil))")
-            Task {
-                await GlobalEventBus.shared.publish(AlarmEvent.triggered(alarmId: finalAlarmId, executionId: nil))
-                print("✅ [AppDelegate] GlobalEventBus.publish 완료")
-            }
+        Task {
+            await GlobalEventBus.shared.publish(AlarmEvent.triggered(alarmId: finalAlarmId, executionId: executionId))
         }
     }
     
     // 스케줄 Notification 처리
     private func handleScheduleNotification(notification: UNNotification) {
-        let userInfo = notification.request.content.userInfo
-        let content = notification.request.content
-        
-        print("📅 [AppDelegate] 스케줄 Notification 수신: \(content.title)")
-        
-        // scheduleId 추출
-        let scheduleId: UUID?
-        if let scheduleIdString = userInfo["scheduleId"] as? String,
-           let parsedUUID = UUID(uuidString: scheduleIdString) {
-            scheduleId = parsedUUID
-        } else if let scheduleIdUUID = userInfo["scheduleId"] as? UUID {
-            scheduleId = scheduleIdUUID
-        } else {
-            print("⚠️ [AppDelegate] 스케줄 ID를 찾을 수 없음")
-            return
-        }
-        
-        guard let finalScheduleId = scheduleId else {
-            print("⚠️ [AppDelegate] scheduleId가 nil입니다")
-            return
-        }
-        
-        print("✅ [AppDelegate] scheduleId 추출 성공: \(finalScheduleId)")
-        // 스케줄 notification은 단순 알림이므로 추가 처리 없이 로그만 남김
+        // 스케줄 notification은 단순 알림이므로 추가 처리 없음
     }
  
     // MARK: UISceneSession Lifecycle
@@ -188,5 +138,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
             guard let alarms = try? await alarmsUseCase.fetchAll(userId: user.id) else { return }
             await notificationUseCase.scheduleFallbackNotifications(for: alarms)
         }
+    }
+    
+    // MARK: - OAuth URL Handling
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        return true
     }
 }

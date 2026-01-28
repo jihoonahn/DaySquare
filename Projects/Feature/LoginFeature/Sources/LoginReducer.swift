@@ -1,4 +1,5 @@
 import Rex
+import Foundation
 import LoginFeatureInterface
 import UsersDomainInterface
 
@@ -16,7 +17,7 @@ public struct LoginReducer: Reducer {
             return [
                 Effect { emitter in
                     do {
-                        let _ = try await usersUseCase.login(
+                        try await usersUseCase.login(
                             provider: "apple",
                             email: nil,
                             displayName: nil
@@ -33,7 +34,7 @@ public struct LoginReducer: Reducer {
             return [
                 Effect { emitter in
                     do {
-                        let _ = try await usersUseCase.login(
+                        try await usersUseCase.login(
                             provider: "google",
                             email: nil,
                             displayName: nil

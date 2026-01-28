@@ -3,7 +3,7 @@ import TuistUI
 
 public struct AppEnvironment: ModuleObject {
     public let organizationName = "me.jihoon"
-    public let devTeam = ""
+    public let devTeam = "PG5KXQ6FWQ"
     public let options: ProjectDescription.Project.Options = .options(
         defaultKnownRegions: ["ko", "en"],
         developmentRegion: "ko"

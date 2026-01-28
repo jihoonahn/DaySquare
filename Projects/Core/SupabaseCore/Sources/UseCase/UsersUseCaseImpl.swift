@@ -8,8 +8,8 @@ public final class UsersUseCaseImpl: UsersUseCase {
         self.userRepository = userRepository
     }
     
-    public func login(provider: String, email: String?, displayName: String?) async throws -> UsersEntity {
-        return try await userRepository.loginWithOAuth(
+    public func login(provider: String, email: String?, displayName: String?) async throws {
+        try await userRepository.loginWithOAuth(
             provider: provider,
             email: email,
             displayName: displayName

@@ -82,7 +82,6 @@ public struct AlarmReducer: Reducer {
                         )
                         emitter.send(.addAlarm(newAlarm))
                     } catch {
-                        print("❌ [AlarmReducer] 알람 생성 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorCreateFailed")
                         emitter.send(.setError(errorMessage))
                     }
@@ -91,7 +90,6 @@ public struct AlarmReducer: Reducer {
             
         case .addAlarm(let alarm):
             if state.alarms.contains(where: { $0.id == alarm.id }) {
-                print("⚠️ [AlarmReducer] 이미 존재하는 알람입니다: \(alarm.id)")
                 return []
             }
             
@@ -108,7 +106,6 @@ public struct AlarmReducer: Reducer {
                         try await alarmsUseCase.create(alarm)
                         
                         if alarm.isEnabled {
-                            print("🔔 [AlarmReducer] 알람 스케줄링 시작: \(alarm.id)")
                             try await alarmSchedulesUseCase.scheduleAlarm(alarm)
                         }
                         
@@ -137,10 +134,7 @@ public struct AlarmReducer: Reducer {
                             )
                             
                             try await memosUseCase.createMemo(memo)
-                            print("✅ [AlarmReducer] 알람 메모 추가 완료: \(memo.id)")
                         }
-                        
-                        print("✅ [AlarmReducer] 알람 추가 완료: \(alarm.id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(AlarmDataEvent.created)
@@ -152,12 +146,11 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                         emitter.send(.showingAddAlarmState(false))
                         
                     } catch {
-                        print("❌ [AlarmReducer] 알람 추가 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorAddFailed")
                         emitter.send(.setError(errorMessage))
                         do {
@@ -167,7 +160,7 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                     }
                 }
@@ -187,7 +180,6 @@ public struct AlarmReducer: Reducer {
                 Effect { [self, alarm, shouldAddMemo, memoContent] emitter in
                     do {
                         try await alarmsUseCase.update(alarm)
-                        print("🔔 [AlarmReducer] 알람 스케줄링 업데이트: \(alarm.id)")
                         try await alarmSchedulesUseCase.updateAlarm(alarm)
                         
                         // 메모 처리
@@ -219,7 +211,6 @@ public struct AlarmReducer: Reducer {
                                     updatedAt: Date()
                                 )
                                 try await memosUseCase.updateMemo(updatedMemo)
-                                print("✅ [AlarmReducer] 알람 메모 업데이트 완료: \(updatedMemo.id)")
                             } else {
                                 // 새 메모 생성
                                 let memo = MemosEntity(
@@ -240,18 +231,14 @@ public struct AlarmReducer: Reducer {
                                     updatedAt: Date()
                                 )
                                 try await memosUseCase.createMemo(memo)
-                                print("✅ [AlarmReducer] 알람 메모 추가 완료: \(memo.id)")
                             }
                         } else if shouldAddMemo && memoContent.isEmpty {
                             // 메모 활성화되었지만 내용이 비어있으면 기존 메모 삭제
                             let existingMemos = try await memosUseCase.getMemosByAlarmId(alarmId: alarm.id)
                             for memo in existingMemos {
                                 try await memosUseCase.deleteMemo(id: memo.id)
-                                print("✅ [AlarmReducer] 알람 메모 삭제 완료: \(memo.id)")
                             }
                         }
-                        
-                        print("✅ [AlarmReducer] 알람 수정 완료: \(alarm.id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(AlarmDataEvent.updated)
@@ -263,11 +250,10 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                         emitter.send(.showingEditAlarmState(nil))                        
                     } catch {
-                        print("❌ [AlarmReducer] 알람 수정 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorUpdateFailed")
                         emitter.send(.setError(errorMessage))
                         do {
@@ -277,7 +263,7 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                     }
                 }
@@ -292,19 +278,15 @@ public struct AlarmReducer: Reducer {
                     do {
                         try await alarmsUseCase.delete(id: id)
                         
-                        print("🔕 [AlarmReducer] 알람 스케줄링 취소: \(id)")
                         do {
                             try await alarmSchedulesUseCase.cancelAlarm(id)
                         } catch {
-                            print("⚠️ [AlarmReducer] 알람 스케줄링 취소 실패 (무시됨): \(id) - \(error)")
+                            // 알람 스케줄링 취소 실패 (무시됨)
                         }
-                        
-                        print("✅ [AlarmReducer] 알람 삭제 완료: \(id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(AlarmDataEvent.deleted)
                     } catch {
-                        print("❌ [AlarmReducer] 알람 삭제 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorDeleteFailed")
                         emitter.send(.setError(errorMessage))
                         do {
@@ -314,7 +296,7 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                     }
                 }
@@ -342,18 +324,15 @@ public struct AlarmReducer: Reducer {
                             throw AlarmServiceError.entityNotFound
                         }
                         
-                        print("🔔 [AlarmReducer] 알람 스케줄링 토글: \(id) -> \(newIsEnabled)")
                         if newIsEnabled {
                             try await alarmSchedulesUseCase.scheduleAlarm(alarm)
                         } else {
                             try await alarmSchedulesUseCase.cancelAlarm(id)
                         }
-                        print("✅ [AlarmReducer] 알람 토글 완료: \(id) -> \(newIsEnabled)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(AlarmDataEvent.toggled)
                     } catch {
-                        print("❌ [AlarmReducer] 알람 토글 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorToggleFailed")
                         emitter.send(.setError(errorMessage))
                         do {
@@ -363,7 +342,7 @@ public struct AlarmReducer: Reducer {
                             let alarms = try await alarmsUseCase.fetchAll(userId: user.id)
                             emitter.send(.setAlarms(alarms))
                         } catch {
-                            print("❌ [AlarmReducer] 알람 목록 재로드 실패: \(error)")
+                            // 알람 목록 재로드 실패
                         }
                     }
                 }
@@ -403,7 +382,6 @@ public struct AlarmReducer: Reducer {
                         )
                         emitter.send(.updateAlarm(updatedAlarm))
                     } catch {
-                        print("❌ [AlarmReducer] 알람 업데이트 실패: \(error)")
                         let errorMessage = AlarmError.formatErrorMessage(error, key: "AlarmErrorUpdateFailed")
                         emitter.send(.setError(errorMessage))
                     }
@@ -435,7 +413,7 @@ public struct AlarmReducer: Reducer {
                     do {
                         try await alarmSchedulesUseCase.stopAlarm(id)
                     } catch {
-                        print("❌ [AlarmReducer] 알람 중지 실패: \(error.localizedDescription)")
+                        // 알람 중지 실패
                     }
                 }
             ]
@@ -490,7 +468,6 @@ public struct AlarmReducer: Reducer {
                             emitter.send(.setMemoContent("", hasContent: false))
                         }
                     } catch {
-                        print("⚠️ [AlarmReducer] 메모 로드 실패: \(error)")
                         emitter.send(.setMemoContent("", hasContent: false))
                     }
                 }

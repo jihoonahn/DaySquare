@@ -144,7 +144,6 @@ public struct SchedulesReducer: Reducer {
                             emitter.send(.setMemoContent("", hasContent: false))
                         }
                     } catch {
-                        print("⚠️ [SchedulesReducer] 메모 로드 실패: \(error)")
                         emitter.send(.setMemoContent("", hasContent: false))
                     }
                 }
@@ -175,7 +174,6 @@ public struct SchedulesReducer: Reducer {
                         )
                         
                         try await schedulesUseCase.createSchedule(newSchedule)
-                        print("✅ [SchedulesReducer] 스케줄 추가 완료: \(newSchedule.id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(ScheduleDataEvent.created)
@@ -201,7 +199,6 @@ public struct SchedulesReducer: Reducer {
                             )
                             
                             try await memosUseCase.createMemo(memo)
-                            print("✅ [SchedulesReducer] 스케줄 메모 추가 완료: \(memo.id)")
                         }
                         
                         emitter.send(.loadSchedules)
@@ -234,7 +231,6 @@ public struct SchedulesReducer: Reducer {
                         )
                         
                         try await schedulesUseCase.updateSchedule(updatedSchedule)
-                        print("✅ [SchedulesReducer] 스케줄 수정 완료: \(updatedSchedule.id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(ScheduleDataEvent.updated)
@@ -268,7 +264,6 @@ public struct SchedulesReducer: Reducer {
                                     updatedAt: Date()
                                 )
                                 try await memosUseCase.updateMemo(updatedMemo)
-                                print("✅ [SchedulesReducer] 스케줄 메모 업데이트 완료: \(updatedMemo.id)")
                             } else {
                                 // 새 메모 생성
                                 let memo = MemosEntity(
@@ -289,14 +284,12 @@ public struct SchedulesReducer: Reducer {
                                     updatedAt: Date()
                                 )
                                 try await memosUseCase.createMemo(memo)
-                                print("✅ [SchedulesReducer] 스케줄 메모 추가 완료: \(memo.id)")
                             }
                         } else if shouldAddMemo && memoContent.isEmpty {
                             // 메모 활성화되었지만 내용이 비어있으면 기존 메모 삭제
                             let existingMemos = try await memosUseCase.getMemosByScheduleId(scheduleId: updatedSchedule.id)
                             for memo in existingMemos {
                                 try await memosUseCase.deleteMemo(id: memo.id)
-                                print("✅ [SchedulesReducer] 스케줄 메모 삭제 완료: \(memo.id)")
                             }
                         }
                         
@@ -315,7 +308,6 @@ public struct SchedulesReducer: Reducer {
                 Effect { [self] emitter in
                     do {
                         try await schedulesUseCase.deleteSchedule(id: id)
-                        print("✅ [SchedulesReducer] 스케줄 삭제 완료: \(id)")
                         
                         // EventBus로 데이터 변경 알림
                         await GlobalEventBus.shared.publish(ScheduleDataEvent.deleted)

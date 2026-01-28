@@ -2,17 +2,21 @@ import Foundation
 import Supabase
 import SupabaseCoreInterface
 import UsersDomainInterface
+import AuthCoreInterface
 
 public final class UsersServiceImpl: UsersService {
 
     private let client: SupabaseClient
     private let supabaseService: SupabaseService
+    private let appleOauthService: AppleOauthService
 
     public init(
-        supabaseService: SupabaseService
+        supabaseService: SupabaseService,
+        appleOauthService: AppleOauthService,
     ) {
         self.client = supabaseService.client
         self.supabaseService = supabaseService
+        self.appleOauthService = appleOauthService
     }
 
     public func signInWithGoogle() async throws -> UsersEntity {
@@ -32,12 +36,11 @@ public final class UsersServiceImpl: UsersService {
         if let existingUser = users.first {
             return existingUser.toEntity()
         }
-
         let newUser = UsersEntity(
             id: authUser.id,
             provider: "google",
-            email: authUser.email,
-            displayName: authUser.userMetadata["full_name"]?.rawValue,
+            email: authUser.email ?? authUser.userMetadata["email"]?.rawValue,
+            displayName: authUser.userMetadata["full_name"]?.rawValue ?? authUser.userMetadata["name"]?.rawValue,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -49,15 +52,18 @@ public final class UsersServiceImpl: UsersService {
             .single()
             .execute()
             .value
-        
+
         return created.toEntity()
     }
 
     public func signInWithApple() async throws -> UsersEntity {
-        let response = try await client.auth.signInWithOAuth(
+        let appleOauthEntity = try await appleOauthService.signInWithApple()
+        
+        let openIdConnectCredentials = OpenIDConnectCredentials(
             provider: .apple,
-            redirectTo: URL(string: "withday://auth/callback")
+            idToken: appleOauthEntity.identityToken
         )
+        let response = try await client.auth.signInWithIdToken(credentials: openIdConnectCredentials)
         let authUser = response.user
 
         let users: [UsersDTO] = try await client
@@ -73,9 +79,9 @@ public final class UsersServiceImpl: UsersService {
 
         let newUser = UsersEntity(
             id: authUser.id,
-            provider: "google",
-            email: authUser.email,
-            displayName: authUser.userMetadata["full_name"]?.rawValue,
+            provider: "apple",
+            email: appleOauthEntity.email ?? authUser.email,
+            displayName: appleOauthEntity.displayName ?? authUser.userMetadata["full_name"]?.rawValue,
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -87,19 +93,12 @@ public final class UsersServiceImpl: UsersService {
             .single()
             .execute()
             .value
-        
+
         return created.toEntity()
     }
 
     public func fetchCurrentUser() async throws -> UsersEntity {
-        // 세션 가져오기 (세션이 없거나 만료된 경우 예외 발생 가능)
-        let session: Session
-        do {
-            session = try await client.auth.session
-        } catch {
-            print("⚠️ [UsersServiceImpl] 세션을 가져오는 중 오류 발생: \(error)")
-            throw error
-        }
+        let session = try await client.auth.session
         
         let userId = session.user.id
         let user: UsersDTO = try await client

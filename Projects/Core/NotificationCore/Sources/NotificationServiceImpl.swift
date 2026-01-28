@@ -93,12 +93,9 @@ public final class NotificationServiceImpl: NotificationService {
         
         let calendar = Calendar.current
         
-        print("📅 [NotificationService] 스케줄 notification 등록 시작: \(schedules.count)개")
-        
         for schedule in schedules {
             // 스케줄 날짜와 시작 시간 파싱
             guard let scheduleDate = parseScheduleDate(schedule.date, startTime: schedule.startTime, calendar: calendar) else {
-                print("⚠️ [NotificationService] 스케줄 날짜 파싱 실패: date=\(schedule.date), startTime=\(schedule.startTime)")
                 continue
             }
             
@@ -121,9 +118,8 @@ public final class NotificationServiceImpl: NotificationService {
             
             do {
                 try await center.add(request)
-                print("✅ [NotificationService] 스케줄 notification 등록 성공: \(schedule.title) - \(scheduleDate)")
             } catch {
-                print("❌ [NotificationService] 스케줄 notification 등록 실패: \(schedule.title) - \(error)")
+                // 스케줄 notification 등록 실패
             }
         }
     }
@@ -185,7 +181,6 @@ public final class NotificationServiceImpl: NotificationService {
         dateFormatter.timeZone = calendar.timeZone
         
         guard let date = dateFormatter.date(from: normalizedDateString) else {
-            print("⚠️ [NotificationService] 날짜 파싱 실패: \(normalizedDateString)")
             return nil
         }
         
@@ -197,7 +192,6 @@ public final class NotificationServiceImpl: NotificationService {
         
         let timeComponents = normalizedTime.split(separator: ":").compactMap { Int($0) }
         guard timeComponents.count >= 2 else {
-            print("⚠️ [NotificationService] 시간 파싱 실패: \(normalizedTime)")
             return nil
         }
         
@@ -206,7 +200,6 @@ public final class NotificationServiceImpl: NotificationService {
         
         // 시간 범위 검증
         guard hour >= 0 && hour < 24 && minute >= 0 && minute < 60 else {
-            print("⚠️ [NotificationService] 잘못된 시간: \(hour):\(minute)")
             return nil
         }
         
@@ -217,7 +210,6 @@ public final class NotificationServiceImpl: NotificationService {
         dateComponents.nanosecond = 0
         
         guard let finalDate = calendar.date(from: dateComponents) else {
-            print("⚠️ [NotificationService] 날짜 생성 실패")
             return nil
         }
         

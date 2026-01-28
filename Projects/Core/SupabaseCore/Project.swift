@@ -14,6 +14,7 @@ struct SupabaseCore: Module {
                 name: typeName,
                 dependencies: [
                     .core(target: typeName, type: .interface),
+                    .core(target: "AuthCore", type: .interface),
                     .shared(target: "Utility"),
                 ]
             )

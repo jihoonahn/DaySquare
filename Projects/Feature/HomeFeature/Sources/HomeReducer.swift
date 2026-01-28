@@ -73,7 +73,6 @@ public struct HomeReducer: Reducer {
                             schedules: schedules
                         ))
                     } catch {
-                        print("❌ [HomeReducer] 데이터 로드 실패: \(error)")
                         emitter.send(.setLoading(false))
                     }
                 }
@@ -183,7 +182,6 @@ public struct HomeReducer: Reducer {
                             schedules: nextDaySchedules
                         ))
                     } catch {
-                        print("❌ [HomeReducer] 다음날 데이터 로드 실패: \(error)")
                         emitter.send(.setLoadingNextDay(false))
                     }
                 }
@@ -256,7 +254,6 @@ public struct HomeReducer: Reducer {
                             schedules: previousDaySchedules
                         ))
                     } catch {
-                        print("❌ [HomeReducer] 전날 데이터 로드 실패: \(error)")
                         emitter.send(.setLoadingNextDay(false))
                     }
                 }

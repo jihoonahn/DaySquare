@@ -19,8 +19,6 @@ public final class SupabaseServiceImpl: SupabaseService {
                 )
             )
         )
-        
-        print("✅ [SupabaseServiceImpl] Keychain 기반 세션 저장소 초기화 완료")
     }
     
     /// 로그아웃 시 세션 정리

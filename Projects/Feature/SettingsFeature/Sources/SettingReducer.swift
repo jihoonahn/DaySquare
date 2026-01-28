@@ -69,7 +69,6 @@ public struct SettingReducer: Reducer {
                             emitter.send(.showToast("SettingToastUserNotFound".localized()))
                             return
                         }
-                        print(currentUser)
                         currentUser.displayName = trimmedName.isEmpty ? nil : trimmedName
                         try await usersUseCase.updateUser(currentUser)
                         emitter.send(.setUserInformation(name: currentUser.displayName ?? "", email: currentUser.email ?? ""))
@@ -82,7 +81,6 @@ public struct SettingReducer: Reducer {
             ]
             
         case .deleteUserAccount:
-            print("Delete User")
             return []
             
         case .showDeleteAlert(let show):

@@ -41,13 +41,15 @@ import LocalizationCoreInterface
 import LocalizationCore
 import NotificationCoreInterface
 import NotificationCore
+import AuthCoreInterface
+import AuthCore
 
 import Dependency
 import Localization
 
 public class AppDependencies {
     
-    public static func setup() {
+    @MainActor public static func setup() {
         let container = DIContainer.shared
 
         // MARK: - Supabase Service
@@ -57,11 +59,15 @@ public class AppDependencies {
         let swiftDataService = SwiftDataServiceImpl()
         container.registerSingleton(SwiftDataService.self, instance: swiftDataService)
         let modelContainer = swiftDataService.container
-        
+                
         // MARK: - Services
+        container.register(AppleOauthService.self) {
+            AuthCore.AppleOauthServiceImpl()
+        }
         container.register(UsersService.self) {
             SupabaseCore.UsersServiceImpl(
-                supabaseService: container.resolve(SupabaseService.self)
+                supabaseService: container.resolve(SupabaseService.self),
+                appleOauthService: container.resolve(AppleOauthService.self),
             )
         }
         container.register(UserSettingsService.self) {
@@ -289,7 +295,7 @@ private extension AppDependencies {
                 await notificationUseCase.updatePermissions(enabled: preference.isEnabled)
             }
         } catch {
-            print("Preference bootstrap failed: \(error)")
+            // Preference bootstrap failed
         }
     }
 }

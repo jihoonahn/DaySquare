@@ -122,7 +122,6 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
          do {
              _ = try await alarmManager.schedule(id: alarm.id, configuration: configuration)
          } catch {
-             print("❌ [AlarmScheduleService] 알람 스케줄링 실패: \(alarm.id) - \(error)")
              throw error
          }
          
@@ -133,11 +132,9 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
              let registeredAlarms = try alarmManager.alarms
              if let registeredAlarm = registeredAlarms.first(where: { $0.id == alarm.id }) {
                  cachedAlarms[alarm.id] = registeredAlarm
-             } else {
-                 print("⚠️ [AlarmKit] 경고: 알람이 등록되지 않음!")
              }
          } catch {
-             print("⚠️ [AlarmKit] 알람 목록 조회 실패: \(error)")
+             // 알람 목록 조회 실패
          }
      }
     
@@ -147,17 +144,13 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
             let alarms = try alarmManager.alarms
             if alarms.contains(where: { $0.id == alarmId }) {
                 try alarmManager.cancel(id: alarmId)
-            } else {
-                print("⚠️ [AlarmScheduleService] 알람이 이미 존재하지 않음: \(alarmId)")
             }
         } catch {
             // 알람 목록 조회 실패 시에도 취소 시도
-            print("⚠️ [AlarmScheduleService] 알람 목록 조회 실패, 취소 시도: \(error)")
             do {
                 try alarmManager.cancel(id: alarmId)
             } catch {
                 // 취소 실패는 무시 (이미 취소되었거나 존재하지 않을 수 있음)
-                print("⚠️ [AlarmScheduleService] 알람 취소 실패 (무시됨): \(alarmId) - \(error)")
             }
         }
         
@@ -172,7 +165,7 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
         do {
             try await cancelAlarm(alarm.id)
         } catch {
-            print("⚠️ [AlarmScheduleService] 알람 취소 실패 (무시하고 계속 진행): \(alarm.id) - \(error)")
+            // 알람 취소 실패 (무시하고 계속 진행)
         }
         // 새로운 스케줄 등록 (scheduleAlarm 내부에서도 기존 알람 확인 및 취소 시도)
         try await scheduleAlarm(alarm)
@@ -332,7 +325,7 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
             do {
                 try await scheduleAlarm(alarm)
             } catch {
-                print("⚠️ [AlarmScheduleService] 알람 스케줄링 실패: \(alarm.id) - \(error)")
+                // 알람 스케줄링 실패
             }
         }
     }
