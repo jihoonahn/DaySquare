@@ -111,6 +111,7 @@ public struct AlarmView: View {
                                         interface.send(.deleteAlarm(id: alarm.id))
                                     } label: {
                                         Label("AlarmActionDelete".localized(), systemImage: "trash")
+                                            .tint(.red)
                                     }
                                 }
                             }

@@ -164,6 +164,7 @@ private extension SchedulesView {
                             interface.send(.deleteSchedule(schedule.id))
                         } label: {
                             Label("ScheduleActionDelete".localized(), systemImage: "trash")
+                                .tint(.red)
                         }
                     }
                 }
