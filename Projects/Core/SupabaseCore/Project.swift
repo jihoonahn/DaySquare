@@ -15,7 +15,7 @@ struct SupabaseCore: Module {
                 dependencies: [
                     .core(target: typeName, type: .interface),
                     .core(target: "AuthCore", type: .interface),
-                    .shared(target: "Utility"),
+                    .shared(target: "Utility")
                 ]
             )
             Interface(
@@ -32,7 +32,7 @@ struct SupabaseCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(

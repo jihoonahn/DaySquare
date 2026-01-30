@@ -15,7 +15,7 @@ struct MainFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
-                    .external(name: "RefineUIIcons"),
+                    .external(name: "RefineUIIcons")
                 ]
             )
             Interface(
@@ -24,14 +24,14 @@ struct MainFeature: Module {
                     .feature(target: "HomeFeature", type: .interface),
                     .feature(target: "AlarmsFeature", type: .interface),
                     .feature(target: "SchedulesFeature", type: .interface),
-                    .feature(target: "SettingsFeature", type: .interface),
+                    .feature(target: "SettingsFeature", type: .interface)
                 ]
             )
             Example(
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing),
+                    .feature(target: typeName, type: .testing)
                 ]
             )
             Testing(

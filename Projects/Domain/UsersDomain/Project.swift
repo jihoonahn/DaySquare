@@ -13,7 +13,7 @@ struct UsersDomain: Module {
             Interface(
                 name: typeName,
                 dependencies: [
-                    .domain(target: "BaseDomain"),
+                    .domain(target: "BaseDomain")
                 ]
             )
         }

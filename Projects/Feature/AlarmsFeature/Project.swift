@@ -15,20 +15,20 @@ struct AlarmsFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
-                    .core(target: "AlarmSchedulesCore", type: .interface),
+                    .core(target: "AlarmSchedulesCore", type: .interface)
                 ]
             )
             Interface(
                 name: typeName,
                 dependencies: [
-                    .domain(target: "AlarmsDomain", type: .interface),
+                    .domain(target: "AlarmsDomain", type: .interface)
                 ]
             )
             Example(
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing),
+                    .feature(target: typeName, type: .testing)
                 ]
             )
             Testing(

@@ -16,7 +16,7 @@ struct SettingsFeature: Module {
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
                     .shared(target: "Localization"),
-                    .shared(target: "Dependency"),
+                    .shared(target: "Dependency")
                 ]
             )
             Interface(
@@ -31,7 +31,7 @@ struct SettingsFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing),
+                    .feature(target: typeName, type: .testing)
                 ]
             )
             Testing(

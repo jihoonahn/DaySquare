@@ -14,17 +14,17 @@ struct SplashFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
-                    .feature(target: typeName, type: .interface),
+                    .feature(target: typeName, type: .interface)
                 ]
             )
             Interface(
-                name: typeName,
+                name: typeName
             )
             Example(
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing),
+                    .feature(target: typeName, type: .testing)
                 ]
             )
             Testing(

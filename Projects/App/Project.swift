@@ -38,7 +38,7 @@ struct DaySquare: Module {
                     .shared(target: "Localization"),
                     .shared(target: "Utility"),
                     .sdk(name: "AlarmKit", type: .framework),
-                    .target(name: "\(typeName)Widget"),
+                    .target(name: "\(typeName)Widget")
                 ]
             )
             Sources(

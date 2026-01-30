@@ -17,7 +17,7 @@ struct AlarmSchedulesCore: Module {
                     .sdk(name: "AlarmKit", type: .framework),
                     .sdk(name: "ActivityKit", type: .framework),
                     .sdk(name: "AVFoundation", type: .framework),
-                    .shared(target: "Dependency"),
+                    .shared(target: "Dependency")
                 ]
             )
             Interface(
@@ -25,13 +25,13 @@ struct AlarmSchedulesCore: Module {
                 dependencies: [
                     .domain(target: "AlarmsDomain", type: .interface),
                     .sdk(name: "AlarmKit", type: .framework),
-                    .sdk(name: "ActivityKit", type: .framework),
+                    .sdk(name: "ActivityKit", type: .framework)
                 ]
             )
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(

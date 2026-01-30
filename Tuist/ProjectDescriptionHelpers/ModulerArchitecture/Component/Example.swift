@@ -27,7 +27,7 @@ public struct Example: TargetConvertable {
             infoPlist: .extendingDefault(with: [
                 "UIMainStoryboardFile": "",
                 "UILaunchStoryboardName": "LaunchScreen",
-                "ENABLE_TESTS": .boolean(true),
+                "ENABLE_TESTS": .boolean(true)
             ]),
             sources: .example,
             dependencies: dependencies,

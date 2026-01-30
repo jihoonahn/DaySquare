@@ -33,7 +33,7 @@ struct HomeFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing),
+                    .feature(target: typeName, type: .testing)
                 ]
             )
             Testing(

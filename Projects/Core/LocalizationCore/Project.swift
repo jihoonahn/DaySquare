@@ -14,7 +14,7 @@ struct LocalizationCore: Module {
                 name: typeName,
                 resources: ["Resources/**"],
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Interface(
@@ -26,7 +26,7 @@ struct LocalizationCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(

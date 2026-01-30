@@ -13,20 +13,20 @@ struct NotificationCore: Module {
             Sources(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Interface(
                 name: typeName,
                 dependencies: [
                     .domain(target: "SchedulesDomain", type: .interface),
-                    .domain(target: "NotificationDomain", type: .interface),
+                    .domain(target: "NotificationDomain", type: .interface)
                 ]
             )
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(

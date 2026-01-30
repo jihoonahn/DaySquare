@@ -14,7 +14,7 @@ struct AuthCore: Module {
                 name: typeName,
                 dependencies: [
                     .core(target: typeName, type: .interface),
-                    .sdk(name: "AuthenticationServices", type: .framework),
+                    .sdk(name: "AuthenticationServices", type: .framework)
                 ]
             )
             Interface(
@@ -26,7 +26,7 @@ struct AuthCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(

@@ -13,7 +13,7 @@ struct SwiftDataCore: Module {
             Sources(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Interface(
@@ -23,13 +23,13 @@ struct SwiftDataCore: Module {
                     .domain(target: "UsersDomain", type: .interface),
                     .domain(target: "UserSettingsDomain", type: .interface),
                     .domain(target: "SchedulesDomain", type: .interface),
-                    .domain(target: "MemosDomain", type: .interface),
+                    .domain(target: "MemosDomain", type: .interface)
                 ]
             )
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface),
+                    .core(target: typeName, type: .interface)
                 ]
             )
             Tests(
