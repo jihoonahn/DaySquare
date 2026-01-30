@@ -120,6 +120,7 @@ platform :ios do
 
   desc "프로덕션 IPA 빌드"
   lane :build_prod do
+    setup_ci(force: true) if ENV["CI"]
     generate
     match_sync
     build_app(
@@ -158,6 +159,7 @@ platform :ios do
 
   desc "프로덕션 Archive 생성"
   lane :archive_prod do
+    setup_ci(force: true) if ENV["CI"]
     generate
     match_sync
     build_app(
@@ -181,6 +183,7 @@ platform :ios do
 
   desc "스테이징 Archive 생성"
   lane :archive_stage do
+    setup_ci(force: true) if ENV["CI"]
     generate
     match_sync
     build_app(
