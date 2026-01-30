@@ -71,6 +71,10 @@ public struct Sources: TargetConvertable {
         if let spec = provisioningProfileSpecifier {
             base["PROVISIONING_PROFILE_SPECIFIER"] = .string(spec)
             base["CODE_SIGN_STYLE"] = .string("Manual")
+            base["CODE_SIGN_IDENTITY"] = .string("Apple Distribution")
+        } else {
+            base["CODE_SIGN_STYLE"] = .string("Manual")
+            base["CODE_SIGN_IDENTITY"] = .string("")
         }
         return base
     }
