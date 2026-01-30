@@ -165,7 +165,7 @@ platform :ios do
       scheme: SCHEME_PROD,
       configuration: "PROD",
       export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} CODE_SIGN_IDENTITY='Apple Distribution' -jobs 1",
+      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} -jobs 1",
       export_options: {
         method: "app-store",
         provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}", WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}" },
