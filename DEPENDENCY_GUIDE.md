@@ -1,4 +1,4 @@
-# WithDay Dependency Injection 가이드
+# DaySquare Dependency Injection 가이드
 
 ## 📋 목차
 
@@ -10,7 +10,7 @@
 
 ## 개요
 
-WithDay 앱은 **Dependency Injection (DI)** 패턴을 사용하여 모듈 간 결합도를 낮추고 테스트 가능한 구조를 유지합니다.
+DaySquare 앱은 **Dependency Injection (DI)** 패턴을 사용하여 모듈 간 결합도를 낮추고 테스트 가능한 구조를 유지합니다.
 
 ### 핵심 컴포넌트
 

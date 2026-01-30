@@ -4,7 +4,7 @@ import LocalizationCoreInterface
 public final class LocalizationServiceImpl: LocalizationService {
 
     private let userDefaults: UserDefaults
-    private let languageKey = "com.withday.localization.language"
+    private let languageKey = "com.daysquare.localization.language"
     private let supportedLanguages: [String: String] = [
         "ko": "한국어",
         "en": "English",

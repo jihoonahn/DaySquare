@@ -3,9 +3,9 @@ import ProjectDescriptionHelpers
 import TuistUI
 import Playgrounds
 
-let project = WithDay().module()
+let project = DaySquare().module()
 
-struct WithDay: Module {
+struct DaySquare: Module {
     @Constant var env = AppEnvironment()
 
     var body: some Module {
@@ -14,7 +14,7 @@ struct WithDay: Module {
                 name: typeName,
                 product: .app,
                 infoPlist: .file(path: "iOS/Support/Info.plist"),
-                entitlements: .file(path: "iOS/Support/WithDay.entitlements"),
+                entitlements: .file(path: "iOS/Support/DaySquare.entitlements"),
                 sources: ["iOS/Sources/**"],
                 resources: ["iOS/Resources/**"],
                 configuration: .App,
@@ -29,6 +29,7 @@ struct WithDay: Module {
                     .feature(target: "SchedulesFeature"),
                     .feature(target: "SettingsFeature"),
                     .core(target: "AlarmSchedulesCore"),
+                    .core(target: "AlarmSchedulesCore", type: .interface),
                     .core(target: "NotificationCore"),
                     .core(target: "AuthCore"),
                     .core(target: "SupabaseCore"),
@@ -52,6 +53,7 @@ struct WithDay: Module {
                 ],
                 configuration: .App,
                 dependencies: [
+                    .core(target: "AlarmSchedulesCore", type: .interface),
                     .core(target: "AlarmSchedulesCore"),
                     .shared(target: "Utility"),
                     .sdk(name: "AlarmKit", type: .framework)

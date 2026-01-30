@@ -23,7 +23,7 @@ public struct LoginView: View {
 
                 VStack(spacing: 20) {
                     VStack(spacing: 8) {
-                        Text("WithDay")
+                        Text("Day Square")
                             .font(.system(size: 36, weight: .bold))
                             .foregroundColor(.white)
                         

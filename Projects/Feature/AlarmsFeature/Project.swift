@@ -15,6 +15,7 @@ struct AlarmsFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
+                    .core(target: "AlarmSchedulesCore", type: .interface),
                 ]
             )
             Interface(

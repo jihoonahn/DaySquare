@@ -22,15 +22,15 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>me.jihoon.withday</string>
+			<string>me.jihoon.daysquare</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>withday</string>
+				<string>daysquare</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>2</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAlarmKitUsageDescription</key>
@@ -60,6 +60,10 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 		<string>processing</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>me.jihoon.DaySquare.background-task</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

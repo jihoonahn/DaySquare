@@ -5,7 +5,7 @@ import AlarmKit
 import AppIntents
 
 @main
-struct WithDayWidget: WidgetBundle {
+struct DaySquareWidget: WidgetBundle {
     var body: some Widget {
         AlarmWidget()
     }

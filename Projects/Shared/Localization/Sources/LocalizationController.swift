@@ -5,7 +5,7 @@ public final class LocalizationController {
     
     public static let languageDidChangeNotification = Notification.Name("LocalizationController.languageDidChange")
     
-    private let queue = DispatchQueue(label: "com.withday.localization.controller", attributes: .concurrent)
+    private let queue = DispatchQueue(label: "com.daysquare.localization.controller", attributes: .concurrent)
     private var _languageCode: String
     
     public var languageCode: String {

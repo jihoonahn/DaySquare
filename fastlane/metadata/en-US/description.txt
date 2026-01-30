@@ -1,0 +1,4 @@
+DaySquare helps you manage your day with alarms, schedules, and more.
+
+Customize the app description for App Store. You can write multiple paragraphs.
+Keep it under 4000 characters.

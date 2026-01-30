@@ -4,7 +4,7 @@ import Utility
 
 public final class KeychainAuthStorage: AuthLocalStorage {
     private let keychain = Keychain.shared
-    private let servicePrefix = "com.withday.supabase"
+    private let servicePrefix = "com.daysquare.supabase"
     
     public init() {}
     

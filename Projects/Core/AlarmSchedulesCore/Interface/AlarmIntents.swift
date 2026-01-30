@@ -25,7 +25,7 @@ public struct StopAlarmIntent: LiveActivityIntent {
 
 public struct OpenAlarmAppIntent: LiveActivityIntent {
     public static var title: LocalizedStringResource = "앱 열기"
-    public static var description = IntentDescription("WithDay 앱을 엽니다.")
+    public static var description = IntentDescription("DaySquare 앱을 엽니다.")
     public static var openAppWhenRun: Bool = true
     
     @Parameter(title: "알람 ID")

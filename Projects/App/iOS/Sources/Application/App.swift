@@ -6,7 +6,7 @@ import SwiftDataCoreInterface
 import ActivityKit
 
 @main
-struct WithDayApp: App {
+struct DaySquareApp: App {
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     @State private var modelContainer: ModelContainer?
     private let rootFactory: RootFactory

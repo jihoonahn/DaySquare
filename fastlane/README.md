@@ -143,6 +143,14 @@ Tuist 프로젝트 정리
 
 프로덕션 환경 Archive 생성
 
+### ios write_changelog
+
+```sh
+[bundle exec] fastlane ios write_changelog
+```
+
+릴리즈 노트 작성 (CHANGELOG.txt 파일 생성/수정)
+
 ### ios beta_stage
 
 ```sh
@@ -175,6 +183,22 @@ TestFlight 배포 (외부 테스터에게 배포)
 
 App Store에 배포
 
+### ios deploy_new_feature
+
+```sh
+[bundle exec] fastlane ios deploy_new_feature
+```
+
+새 기능 배포 (빌드 번호 자동 증가 + TestFlight 업로드)
+
+### ios deploy_new_version
+
+```sh
+[bundle exec] fastlane ios deploy_new_version
+```
+
+새 버전 배포 (버전 문자열 변경 + 빌드 번호 초기화 + TestFlight 업로드)
+
 ### ios clean
 
 ```sh
@@ -182,6 +206,14 @@ App Store에 배포
 ```
 
 프로젝트 정리
+
+### ios discord_test
+
+```sh
+[bundle exec] fastlane ios discord_test
+```
+
+Discord 웹훅 테스트 (알림이 오는지 확인)
 
 ### ios check_signing
 

@@ -5,9 +5,9 @@
     <img src="https://img.shields.io/badge/Tuist-4.0+-blue.svg" />
 </div>
 
-# WithDay
+# DaySquare
 
-**WithDay**는 알람과 스케줄을 효율적으로 관리할 수 있는 iOS 애플리케이션입니다.
+**DaySquare**는 알람과 스케줄을 효율적으로 관리할 수 있는 iOS 애플리케이션입니다.
 
 ## 🚀 주요 기능
 
@@ -32,8 +32,8 @@
 ### 1. 저장소 클론
 
 ```bash
-git clone https://github.com/jihoonahn/withDay.git
-cd withDay
+git clone https://github.com/jihoonahn/daysquare.git
+cd daysquare
 ```
 
 ### 2. Tuist 설치
@@ -65,12 +65,12 @@ SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### 6. Xcode에서 실행
 
-생성된 `WithDay.xcworkspace` 파일을 열고 실행합니다.
+생성된 `DaySquare.xcworkspace` 파일을 열고 실행합니다.
 
 ## 🏗 프로젝트 구조
 
 ```
-withDay/
+daysquare/
 ├── Projects/
 │   ├── App/                    # 메인 애플리케이션
 │   │   ├── iOS/                # iOS 앱 소스
@@ -112,7 +112,7 @@ withDay/
 
 ## 🏛 아키텍처
 
-WithDay는 **Clean Architecture**와 **Modular Architecture**를 기반으로 구성되어 있습니다.
+DaySquare는 **Clean Architecture**와 **Modular Architecture**를 기반으로 구성되어 있습니다.
 
 ### 레이어 구조
 
@@ -154,21 +154,25 @@ WithDay는 **Clean Architecture**와 **Modular Architecture**를 기반으로 �
 ## 📱 주요 기능 상세
 
 ### 알람 관리
+
 - AlarmKit을 활용한 정확한 알람 스케줄링
 - 반복 알람 지원
 - 알람 활성화/비활성화
 
 ### 스케줄 관리
+
 - 일정 생성 및 수정
 - 메모 기능
 - 캘린더 뷰
 
 ### 인증
+
 - Apple Sign In
 - Google Sign In (Supabase OAuth)
 - 사용자 프로필 관리
 
 ### 데이터 동기화
+
 - Supabase를 통한 클라우드 동기화
 - SwiftData를 활용한 오프라인 지원
 - 자동 동기화
@@ -180,7 +184,7 @@ WithDay는 **Clean Architecture**와 **Modular Architecture**를 기반으로 �
 tuist test
 
 # 특정 타겟 테스트
-xcodebuild test -workspace WithDay.xcworkspace -scheme WithDay-dev
+xcodebuild test -workspace DaySquare.xcworkspace -scheme DaySquare-dev
 ```
 
 ## 🚀 빌드 및 배포
@@ -189,19 +193,19 @@ xcodebuild test -workspace WithDay.xcworkspace -scheme WithDay-dev
 
 ```bash
 tuist generate
-# Xcode에서 WithDay-dev 스킴 선택 후 실행
+# Xcode에서 DaySquare-dev 스킴 선택 후 실행
 ```
 
 ### 스테이징 환경
 
 ```bash
-# Xcode에서 WithDay-stage 스킴 선택 후 실행
+# Xcode에서 DaySquare-stage 스킴 선택 후 실행
 ```
 
 ### 프로덕션 환경
 
 ```bash
-# Xcode에서 WithDay-prod 스킴 선택 후 Archive
+# Xcode에서 DaySquare-prod 스킴 선택 후 Archive
 ```
 
 ### Fastlane

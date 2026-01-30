@@ -7,7 +7,7 @@ import SchedulesDomainInterface
 public final class NotificationServiceImpl: NotificationService {
 
     private let userDefaults: UserDefaults
-    private let isEnabledKey = "com.withday.notification.isEnabled"
+    private let isEnabledKey = "com.daysquare.notification.isEnabled"
     private let fallbackPrefix = "fallback-alarm-"
     private let schedulePrefix = "schedule-"
 
