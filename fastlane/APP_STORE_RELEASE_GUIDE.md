@@ -4,6 +4,25 @@ TestFlight에서 테스트가 완료된 후, App Store에 정식 배포하는 �
 
 ---
 
+## ⚠️ "Couldn't find app 'com.jihoon.DaySquare'" 오류가 나올 때
+
+**TestFlight 업로드** 또는 **release** 시 위 오류가 나오면, **App Store Connect에 앱이 아직 등록되지 않은 것**입니다.
+
+### 해결: App Store Connect에서 앱 추가 (한 번만)
+
+1. [App Store Connect](https://appstoreconnect.apple.com) → **내 앱**
+2. **+** → **앱 추가** (또는 New App)
+3. **플랫폼**: iOS  
+   **이름**: DaySquare  
+   **기본 언어**: 한국어 또는 English  
+   **번들 ID**: **com.jihoon.DaySquare** 선택 (Developer Portal에 등록된 것)  
+   **SKU**: 예) `DaySquare` 또는 `com.jihoon.DaySquare`
+4. **만들기** 클릭
+
+이후 `fastlane beta_stage` 또는 `fastlane release` 를 다시 실행하면 됩니다.
+
+---
+
 ## 📋 배포 전 체크리스트
 
 ### 필수 확인 사항

@@ -1,4 +1,4 @@
-app_identifier(ENV["APP_IDENTIFIER"] || "me.jihoon.DaySquare")
+app_identifier(ENV["APP_IDENTIFIER"] || "com.jihoon.DaySquare")
 apple_id(ENV["APPLE_ID"] || "jihoonahn.dev@gmail.com")
 team_id(ENV["TEAM_ID"] || "PG5KXQ6FWQ")
 itc_team_id(ENV["ITC_TEAM_ID"] || "22668828378")

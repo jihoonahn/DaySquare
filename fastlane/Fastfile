@@ -43,7 +43,7 @@ PROJECT_ROOT = File.expand_path("..", __dir__)
 APP_PROJECT_PATH = File.join(PROJECT_ROOT, "Projects", "App", "DaySquare.xcodeproj")
 
 # 공통 변수
-APP_IDENTIFIER = ENV["APP_IDENTIFIER"] || "me.jihoon.DaySquare"
+APP_IDENTIFIER = ENV["APP_IDENTIFIER"] || "com.jihoon.DaySquare"
 WIDGET_IDENTIFIER = "#{APP_IDENTIFIER}.Widget"
 WORKSPACE_NAME = "DaySquare.xcworkspace"
 WORKSPACE_PATH = File.join(PROJECT_ROOT, WORKSPACE_NAME)

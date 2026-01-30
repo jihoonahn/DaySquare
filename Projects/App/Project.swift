@@ -45,7 +45,7 @@ struct DaySquare: Module {
             Sources(
                 name: "\(typeName)Widget",
                 product: .appExtension,
-                bundleId: "me.jihoon.\(typeName).Widget",
+                bundleId: "com.jihoon.\(typeName).Widget",
                 infoPlist: .file(path: "Widget/Support/Info.plist"),
                 sources: ["Widget/Sources/**"],
                 resources: [
