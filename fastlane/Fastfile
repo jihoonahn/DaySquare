@@ -93,7 +93,12 @@ platform :ios do
 
   desc "인증서·프로비저닝 프로파일 동기화 (읽기 전용)"
   lane :match_sync do
-    match(type: "appstore", app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER], readonly: true)
+    match(
+      type: "appstore",
+      app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER],
+      readonly: true,
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
+    )
   end
 
   desc "새 인증서·프로비저닝 프로파일 생성"

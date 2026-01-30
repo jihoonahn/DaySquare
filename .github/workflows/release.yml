@@ -33,6 +33,7 @@ jobs:
         run: brew install tuist
 
       - name: Run Fastlane release
+        id: release
         env:
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -41,6 +42,13 @@ jobs:
           ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: bundle exec fastlane release
+
+      - name: Show build log on failure
+        if: failure()
+        run: |
+          echo "=== Gym/xcodebuild log (last 250 lines) ==="
+          (ls /Users/runner/Library/Logs/gym/*.log 2>/dev/null | head -1 | xargs tail -n 250) || echo "No gym log found."
