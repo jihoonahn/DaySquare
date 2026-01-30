@@ -7,7 +7,7 @@ public extension TargetDependency {
     ) -> TargetDependency {
         .project(
             target: "\(target)\(type.rawValue)",
-            path: .relativeToFeature(target),
+            path: .relativeToFeature(target)
         )
     }
     static func domain(
@@ -16,7 +16,7 @@ public extension TargetDependency {
     ) -> TargetDependency {
         .project(
             target: "\(target)\(type.rawValue)",
-            path: .relativeToDomain(target),
+            path: .relativeToDomain(target)
         )
     }
     static func core(
@@ -25,7 +25,7 @@ public extension TargetDependency {
     ) -> TargetDependency {
         .project(
             target: "\(target)\(type.rawValue)",
-            path: .relativeToCore(target),
+            path: .relativeToCore(target)
         )
     }
     static func shared(
@@ -34,7 +34,7 @@ public extension TargetDependency {
     ) -> TargetDependency {
         .project(
             target: "\(target)\(type.rawValue)",
-            path: .relativeToShared(target),
+            path: .relativeToShared(target)
         )
     }
 }
