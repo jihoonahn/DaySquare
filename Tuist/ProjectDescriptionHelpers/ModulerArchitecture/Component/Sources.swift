@@ -13,6 +13,7 @@ public struct Sources: TargetConvertable {
     let resources: ResourceFileElements
     let target: AppConfiguration.XCConfigTarget
     let dependencies: [TargetDependency]
+    let provisioningProfileSpecifier: String?
 
     public init(
         name: String,
@@ -23,7 +24,8 @@ public struct Sources: TargetConvertable {
         sources: SourceFilesList = .sources,
         resources: ResourceFileElements = [],
         configuration target: AppConfiguration.XCConfigTarget = .Shared,
-        dependencies: [TargetDependency] = []
+        dependencies: [TargetDependency] = [],
+        provisioningProfileSpecifier: String? = nil
     ) {
         self.name = name
         self.destinations = env.destinations
@@ -35,6 +37,7 @@ public struct Sources: TargetConvertable {
         self.resources = resources
         self.target = target
         self.dependencies = dependencies
+        self.provisioningProfileSpecifier = provisioningProfileSpecifier
     }
 
     public init(
@@ -47,7 +50,8 @@ public struct Sources: TargetConvertable {
         sources: SourceFilesList = .sources,
         resources: ResourceFileElements = [],
         configuration target: AppConfiguration.XCConfigTarget = .Shared,
-        dependencies: [TargetDependency] = []
+        dependencies: [TargetDependency] = [],
+        provisioningProfileSpecifier: String? = nil
     ) {
         self.name = name
         self.destinations = destinations
@@ -59,8 +63,18 @@ public struct Sources: TargetConvertable {
         self.resources = resources
         self.target = target
         self.dependencies = dependencies
+        self.provisioningProfileSpecifier = provisioningProfileSpecifier
     }
-    
+
+    private var targetBaseSettings: SettingsDictionary {
+        var base = env.baseSettings
+        if let spec = provisioningProfileSpecifier {
+            base["PROVISIONING_PROFILE_SPECIFIER"] = .string(spec)
+            base["CODE_SIGN_STYLE"] = .string("Manual")
+        }
+        return base
+    }
+
     public func build() -> ProjectDescription.Target {
         return Target(
             name: name,
@@ -74,7 +88,7 @@ public struct Sources: TargetConvertable {
             entitlements: entitlements,
             dependencies: dependencies,
             settings: .settings(
-                base: env.baseSettings,
+                base: targetBaseSettings,
                 configurations: env.configuration.configure(into: target),
                 defaultSettings: .recommended
             )
