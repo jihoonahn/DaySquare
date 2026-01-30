@@ -1,7 +1,6 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 import TuistUI
-import Playgrounds
 
 let project = DaySquare().module()
 
