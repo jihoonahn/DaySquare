@@ -30,10 +30,7 @@ jobs:
           xcode-version: "16.2"
 
       - name: Install Tuist
-        run: |
-          curl -Ls https://install.tuist.io | bash
-        env:
-          TUIST_VERSION: "4.49.1"
+        run: brew install tuist
 
       - name: Run Fastlane release
         env:
