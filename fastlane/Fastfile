@@ -1,34 +1,19 @@
 # This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
+# https://docs.fastlane.tools
 
 default_platform(:ios)
 
 # 환경 변수 로드
 def load_env_file
   env_file = File.join(__dir__, ".env.default")
-  if File.exist?(env_file)
-    File.readlines(env_file).each do |line|
-      next if line.strip.empty? || line.start_with?("#")
-      key, value = line.strip.split("=", 2)
-      if key && value
-        # 따옴표 제거 (양쪽 따옴표 모두 제거)
-        value = value.gsub(/^["']|["']$/, "")
-        ENV[key] = value
-      end
-    end
+  return unless File.exist?(env_file)
+  File.readlines(env_file).each do |line|
+    next if line.strip.empty? || line.start_with?("#")
+    key, value = line.strip.split("=", 2)
+    next unless key && value
+    ENV[key] = value.gsub(/^["']|["']$/, "")
   end
 end
-
-# 환경 변수 로드
 load_env_file
 
 require "net/http"
@@ -36,140 +21,111 @@ require "json"
 require "uri"
 require "openssl"
 
-# 프로젝트 루트 경로 (fastlane 디렉토리의 부모)
+# 경로·상수
 PROJECT_ROOT = File.expand_path("..", __dir__)
-
-# Tuist가 생성하는 xcodeproj 경로
 APP_PROJECT_PATH = File.join(PROJECT_ROOT, "Projects", "App", "DaySquare.xcodeproj")
-
-# 공통 변수
 APP_IDENTIFIER = ENV["APP_IDENTIFIER"] || "com.jihoon.DaySquare"
 WIDGET_IDENTIFIER = "#{APP_IDENTIFIER}.Widget"
 WORKSPACE_NAME = "DaySquare.xcworkspace"
 WORKSPACE_PATH = File.join(PROJECT_ROOT, WORKSPACE_NAME)
-SCHEME_DEV = "DaySquare-dev"
 SCHEME_STAGE = "DaySquare-stage"
 SCHEME_PROD = "DaySquare-prod"
 EXPORT_OPTIONS_PLIST = "fastlane/ExportOptions.plist"
 TEAM_ID = ENV["TEAM_ID"] || "PG5KXQ6FWQ"
 
+def read_changelog
+  path = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
+  return nil unless File.exist?(path)
+  content = File.read(path).strip
+  content.empty? ? nil : content
+end
+
+def get_version_info
+  plist_path = File.join(PROJECT_ROOT, "Projects", "App", "iOS", "Support", "Info.plist")
+  version = "1.0"
+  build_number = "1"
+  if File.exist?(plist_path)
+    plist = File.read(plist_path)
+    if m = plist.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/)
+      version = m[1]
+    end
+    if m = plist.match(/<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/)
+      build_value = m[1]
+      if build_value.start_with?("$") && File.exist?(APP_PROJECT_PATH)
+        pbx = File.read(File.join(APP_PROJECT_PATH, "project.pbxproj"))
+        build_number = (pbx =~ /CURRENT_PROJECT_VERSION\s*=\s*(\d+)/ ? $1 : "1")
+      else
+        build_number = build_value
+      end
+    end
+  end
+  { version: version, build_number: build_number }
+end
+
+def send_discord_notification(title:, description:, success: true, fields: [])
+  webhook_url = ENV["DISCORD_WEBHOOK_URL"]
+  return if webhook_url.to_s.strip.empty?
+  color = success ? 30_669_93 : 15_158_332
+  embed = {
+    "title" => title.to_s[0, 256],
+    "description" => description.to_s[0, 4096],
+    "color" => color,
+    "fields" => fields.map { |f| { "name" => f[:name].to_s[0, 256], "value" => f[:value].to_s[0, 1024], "inline" => f[:inline] != false } }
+  }
+  payload = { "embeds" => [embed] }
+  payload["thread_name"] = ENV["DISCORD_THREAD_NAME"].to_s.strip if ENV["DISCORD_THREAD_NAME"].to_s.strip != ""
+  uri = URI(ENV["DISCORD_WEBHOOK_URL"].strip)
+  uri.query = URI.encode_www_form("thread_id" => ENV["DISCORD_THREAD_ID"].strip) if ENV["DISCORD_THREAD_ID"].to_s.strip != ""
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = (uri.scheme == "https")
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE if %w[1 true].include?(ENV["DISCORD_SKIP_SSL_VERIFY"].to_s)
+  req = Net::HTTP::Post.new(uri.request_uri)
+  req["Content-Type"] = "application/json"
+  req.body = JSON.generate(payload)
+  res = http.request(req)
+  UI.success("Discord 알림 전송 완료") if res.is_a?(Net::HTTPSuccess)
+rescue StandardError => e
+  UI.important("Discord 알림 실패: #{e.message}")
+end
+
 platform :ios do
-  # MARK: - Match (인증서 및 프로비저닝 프로파일 관리)
-  
-  desc "Match를 통해 인증서 및 프로비저닝 프로파일 동기화"
+  # MARK: - 코드 서명
+
+  desc "인증서·프로비저닝 프로파일 동기화 (읽기 전용)"
   lane :match_sync do
-    match(
-      type: "appstore",
-      app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER],
-      readonly: true
-    )
+    match(type: "appstore", app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER], readonly: true)
   end
 
-  desc "Match를 통해 새로운 인증서 및 프로비저닝 프로파일 생성"
+  desc "새 인증서·프로비저닝 프로파일 생성"
   lane :match_new do
-    match(
-      type: "appstore",
-      app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER]
-    )
+    match(type: "appstore", app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER])
   end
 
-  # MARK: - Tuist 프로젝트 생성
+  # MARK: - 프로젝트
 
   desc "Tuist 프로젝트 생성"
   lane :generate do
     Dir.chdir(PROJECT_ROOT) do
-      # 의존성 설치 (필요한 경우)
       sh("tuist install")
-      # 프로젝트 생성
       sh("tuist generate")
     end
   end
 
-  desc "Tuist 의존성 설치"
-  lane :install_dependencies do
-    Dir.chdir(PROJECT_ROOT) do
-      sh("tuist install")
-    end
-  end
+  # MARK: - 빌드·테스트
 
-  desc "Tuist 프로젝트 정리"
-  lane :clean_tuist do
-    Dir.chdir(PROJECT_ROOT) do
-      sh("tuist clean")
-    end
-  end
-
-  # MARK: - 빌드
-
-  desc "개발 환경 빌드"
-  lane :build_dev do
-    generate
-    match_sync
-    
-    build_app(
-      workspace: WORKSPACE_PATH,
-      scheme: SCHEME_DEV,
-      configuration: "DEV",
-      export_method: "app-store",  # App Store 프로파일 사용
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
-        signingStyle: "manual",
-        teamID: TEAM_ID
-      },
-      output_directory: File.join(PROJECT_ROOT, "build"),
-      output_name: "DaySquare-dev.ipa",
-      clean: true
-    )
-  end
-
-  desc "스테이징 환경 빌드"
-  lane :build_stage do
-    generate
-    match_sync
-    
-    build_app(
-      workspace: WORKSPACE_PATH,
-      scheme: SCHEME_STAGE,
-      configuration: "STAGE",
-      export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
-        signingStyle: "manual",
-        teamID: TEAM_ID
-      },
-      output_directory: File.join(PROJECT_ROOT, "build"),
-      output_name: "DaySquare-stage.ipa",
-      clean: true
-    )
-  end
-
-  desc "프로덕션 환경 빌드"
+  desc "프로덕션 IPA 빌드"
   lane :build_prod do
     generate
     match_sync
-    
     build_app(
       workspace: WORKSPACE_PATH,
       scheme: SCHEME_PROD,
       configuration: "PROD",
       export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
+      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} -jobs 1",
       export_options: {
         method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
+        provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}", WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}" },
         signingStyle: "manual",
         teamID: TEAM_ID
       },
@@ -179,135 +135,26 @@ platform :ios do
     )
   end
 
-  # MARK: - 테스트
-
-  desc "모든 테스트 실행"
+  desc "테스트 실행"
   lane :test do
     generate
-    
-    run_tests(
-      workspace: WORKSPACE_PATH,
-      scheme: SCHEME_DEV,
-      configuration: "DEV",
-      clean: true,
-      code_coverage: true
-    )
+    run_tests(workspace: WORKSPACE_PATH, scheme: "DaySquare-dev", configuration: "DEV", clean: true)
   end
 
-  desc "특정 스킴 테스트 실행"
-  lane :test_scheme do |options|
-    scheme = options[:scheme] || SCHEME_DEV
-    generate
-    
-    run_tests(
-      workspace: WORKSPACE_PATH,
-      scheme: scheme,
-      clean: true,
-      code_coverage: true
-    )
-  end
+  # MARK: - 버전
 
-  # MARK: - 버전 관리
-
-  desc "버전 번호 증가 (build number)"
+  desc "빌드 번호만 1 증가"
   lane :bump_build_number do
     generate
-    if File.exist?(APP_PROJECT_PATH)
-      increment_build_number(xcodeproj: APP_PROJECT_PATH)
-    else
-      UI.user_error!("프로젝트 파일을 찾을 수 없습니다: #{APP_PROJECT_PATH}")
-    end
+    increment_build_number(xcodeproj: APP_PROJECT_PATH) if File.exist?(APP_PROJECT_PATH)
   end
 
-  desc "버전 번호 설정"
-  lane :set_build_number do |options|
-    build_number = options[:build_number]
-    generate
-    if File.exist?(APP_PROJECT_PATH)
-      increment_build_number(
-        build_number: build_number,
-        xcodeproj: APP_PROJECT_PATH
-      )
-    else
-      UI.user_error!("프로젝트 파일을 찾을 수 없습니다: #{APP_PROJECT_PATH}")
-    end
-  end
+  # MARK: - Archive (내부용 + 수동 빌드)
 
-  desc "버전 문자열 증가 (version string)"
-  lane :bump_version do |options|
-    version_number = options[:version]
-    generate
-    if File.exist?(APP_PROJECT_PATH)
-      increment_version_number(
-        version_number: version_number,
-        xcodeproj: APP_PROJECT_PATH
-      )
-    else
-      UI.user_error!("프로젝트 파일을 찾을 수 없습니다: #{APP_PROJECT_PATH}")
-    end
-  end
-
-  # MARK: - Archive
-
-  desc "개발 환경 Archive 생성"
-  lane :archive_dev do
-    generate
-    match_sync
-    
-    build_app(
-      workspace: WORKSPACE_PATH,
-      scheme: SCHEME_DEV,
-      configuration: "DEV",
-      export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
-        signingStyle: "manual",
-        teamID: TEAM_ID
-      },
-      output_directory: File.join(PROJECT_ROOT, "build"),
-      output_name: "DaySquare-dev",
-      clean: true,
-      skip_package_ipa: false
-    )
-  end
-
-  desc "스테이징 환경 Archive 생성"
-  lane :archive_stage do
-    generate
-    match_sync
-    
-    build_app(
-      workspace: WORKSPACE_PATH,
-      scheme: SCHEME_STAGE,
-      configuration: "STAGE",
-      export_method: "app-store",
-      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
-        signingStyle: "manual",
-        teamID: TEAM_ID
-      },
-      output_directory: File.join(PROJECT_ROOT, "build"),
-      output_name: "DaySquare-stage",
-      clean: true,
-      skip_package_ipa: false
-    )
-  end
-
-  desc "프로덕션 환경 Archive 생성"
+  desc "프로덕션 Archive 생성"
   lane :archive_prod do
     generate
     match_sync
-    
     build_app(
       workspace: WORKSPACE_PATH,
       scheme: SCHEME_PROD,
@@ -316,10 +163,7 @@ platform :ios do
       xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID} -jobs 1",
       export_options: {
         method: "app-store",
-        provisioningProfiles: {
-          APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}",
-          WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}"
-        },
+        provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}", WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}" },
         signingStyle: "manual",
         teamID: TEAM_ID
       },
@@ -330,398 +174,141 @@ platform :ios do
     )
   end
 
-  # MARK: - 릴리즈 노트 관리
-
-  # 릴리즈 노트 파일 읽기
-  def read_changelog
-    changelog_file = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
-    if File.exist?(changelog_file)
-      content = File.read(changelog_file).strip
-      content.empty? ? nil : content
-    else
-      nil
-    end
+  desc "스테이징 Archive 생성"
+  lane :archive_stage do
+    generate
+    match_sync
+    build_app(
+      workspace: WORKSPACE_PATH,
+      scheme: SCHEME_STAGE,
+      configuration: "STAGE",
+      export_method: "app-store",
+      xcargs: "DEVELOPMENT_TEAM=#{TEAM_ID}",
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: { APP_IDENTIFIER => "match AppStore #{APP_IDENTIFIER}", WIDGET_IDENTIFIER => "match AppStore #{WIDGET_IDENTIFIER}" },
+        signingStyle: "manual",
+        teamID: TEAM_ID
+      },
+      output_directory: File.join(PROJECT_ROOT, "build"),
+      output_name: "DaySquare-stage",
+      clean: true,
+      skip_package_ipa: false
+    )
   end
 
-  # Discord 알림 전송 헬퍼 (Net::HTTP 사용, 플러그인 의존 없음, 실패 시 lane 실패 안 함)
-  def send_discord_notification(title:, description:, success: true, fields: [])
-    webhook_url = ENV["DISCORD_WEBHOOK_URL"]
-    unless webhook_url && !webhook_url.to_s.strip.empty?
-      UI.important("DISCORD_WEBHOOK_URL 미설정 → 알림 건너뜀")
-      return
-    end
-    
-    color = success ? 30_669_93 : 15_158_332  # green / red
-    embed = {
-      "title" => title.to_s[0, 256],
-      "description" => description.to_s[0, 4096],
-      "color" => color,
-      "fields" => fields.map { |f|
-        { "name" => f[:name].to_s[0, 256], "value" => f[:value].to_s[0, 1024], "inline" => f[:inline] != false }
-      }
-    }
-    payload = { "embeds" => [embed] }
-    payload["thread_name"] = ENV["DISCORD_THREAD_NAME"].to_s.strip if ENV["DISCORD_THREAD_NAME"] && !ENV["DISCORD_THREAD_NAME"].to_s.strip.empty?
-    body = JSON.generate(payload)
-    
-    uri = URI(webhook_url.strip)
-    if (tid = ENV["DISCORD_THREAD_ID"]) && !tid.to_s.strip.empty?
-      uri.query = URI.encode_www_form("thread_id" => tid.strip)
-    end
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = (uri.scheme == "https")
-    if ENV["DISCORD_SKIP_SSL_VERIFY"] == "1" || ENV["DISCORD_SKIP_SSL_VERIFY"] == "true"
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    end
-    http.open_timeout = 10
-    http.read_timeout = 10
-    req = Net::HTTP::Post.new(uri.request_uri)
-    req["Content-Type"] = "application/json"
-    req.body = body
-    res = http.request(req)
-    
-    if res.is_a?(Net::HTTPSuccess)
-      UI.success("Discord 알림 전송 완료")
-    else
-      err_detail = res.body.to_s.strip
-      err_detail = JSON.parse(err_detail)["message"] rescue err_detail
-      UI.important("Discord 알림 실패: #{res.code} #{res.message}")
-      UI.important("응답: #{err_detail}") if err_detail && !err_detail.empty?
-    end
-  rescue StandardError => ex
-    UI.important("Discord 알림 전송 실패: #{ex.message}")
-    UI.important(ex.backtrace.first(3).join("\n")) if ENV["FASTLANE_DISCORD_DEBUG"]
-  end
+  # MARK: - TestFlight
 
-  # 버전 정보 가져오기 (Info.plist에서 직접 읽기)
-  def get_version_info
-    info_plist_path = File.join(PROJECT_ROOT, "Projects", "App", "iOS", "Support", "Info.plist")
-    version = "1.0"
-    build_number = "1"
-    
-    if File.exist?(info_plist_path)
-      plist_content = File.read(info_plist_path)
-      
-      # CFBundleShortVersionString 읽기
-      if match = plist_content.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/)
-        version = match[1]
-      end
-      
-      # CFBundleVersion 읽기 - 변수인 경우 프로젝트에서 읽기
-      if match = plist_content.match(/<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/)
-        build_value = match[1]
-        if build_value.start_with?("$")
-          # agvtool 대신 프로젝트 파일에서 직접 읽기
-          if File.exist?(APP_PROJECT_PATH)
-            begin
-              project_content = File.read(File.join(APP_PROJECT_PATH, "project.pbxproj"))
-              if ver_match = project_content.match(/CURRENT_PROJECT_VERSION\s*=\s*(\d+)/)
-                build_number = ver_match[1]
-              end
-            rescue
-              build_number = "1"
-            end
-          end
-        else
-          build_number = build_value
-        end
-      end
-    end
-    
-    { version: version, build_number: build_number }
-  end
-
-  desc "릴리즈 노트 작성 (CHANGELOG.txt 파일 생성/수정)"
-  lane :write_changelog do |options|
-    changelog = options[:changelog]
-    UI.user_error!("변경사항을 입력해주세요: fastlane write_changelog changelog:\"변경사항 내용\"") unless changelog
-    
-    changelog_file = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
-    File.write(changelog_file, changelog)
-    UI.success("✅ 릴리즈 노트가 저장되었습니다: #{changelog_file}")
-    UI.message("📝 내용:")
-    UI.message(changelog)
-  end
-
-  # MARK: - TestFlight 배포
-
-  desc "스테이징 환경 TestFlight 배포"
+  desc "스테이징 TestFlight 배포"
   lane :beta_stage do |options|
     changelog = options[:changelog] || read_changelog
     version_info = get_version_info
-    
-    begin
-      archive_stage
-      upload_to_testflight(
-        skip_waiting_for_build_processing: false,
-        distribute_external: false,
-        notify_external_testers: false,
-        changelog: changelog
-      )
-      
-      # Discord 알림 (성공)
-      send_discord_notification(
-        title: "✅ TestFlight 배포 성공 (Staging)",
-        description: "DaySquare 앱이 TestFlight에 성공적으로 업로드되었습니다.",
-        success: true,
-        fields: [
-          { name: "Version", value: version_info[:version], inline: true },
-          { name: "Build", value: version_info[:build_number], inline: true },
-          { name: "Environment", value: "Staging", inline: true }
-        ]
-      )
-    rescue => ex
-      # Discord 알림 (실패)
-      send_discord_notification(
-        title: "❌ TestFlight 배포 실패 (Staging)",
-        description: "배포 중 오류가 발생했습니다: #{ex.message}",
-        success: false
-      )
-      raise
-    end
+    archive_stage
+    upload_to_testflight(skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
+    send_discord_notification(
+      title: "TestFlight 배포 성공 (Staging)",
+      description: "DaySquare가 TestFlight에 업로드되었습니다.",
+      success: true,
+      fields: [
+        { name: "Version", value: version_info[:version], inline: true },
+        { name: "Build", value: version_info[:build_number], inline: true }
+      ]
+    )
+  rescue StandardError => e
+    send_discord_notification(title: "TestFlight 배포 실패 (Staging)", description: e.message, success: false)
+    raise
   end
 
-  desc "프로덕션 환경 TestFlight 배포"
+  desc "프로덕션 TestFlight 배포"
   lane :beta_prod do |options|
     changelog = options[:changelog] || read_changelog
     version_info = get_version_info
-    
-    begin
-      archive_prod
-      upload_to_testflight(
-        skip_waiting_for_build_processing: false,
-        distribute_external: false,
-        notify_external_testers: false,
-        changelog: changelog
-      )
-      
-      # Discord 알림 (성공)
-      send_discord_notification(
-        title: "✅ TestFlight 배포 성공 (Production)",
-        description: "DaySquare 앱이 TestFlight에 성공적으로 업로드되었습니다.",
-        success: true,
-        fields: [
-          { name: "Version", value: version_info[:version], inline: true },
-          { name: "Build", value: version_info[:build_number], inline: true },
-          { name: "Environment", value: "Production", inline: true }
-        ]
-      )
-    rescue => ex
-      # Discord 알림 (실패)
-      send_discord_notification(
-        title: "❌ TestFlight 배포 실패 (Production)",
-        description: "배포 중 오류가 발생했습니다: #{ex.message}",
-        success: false
-      )
-      raise
-    end
+    archive_prod
+    upload_to_testflight(skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
+    send_discord_notification(
+      title: "TestFlight 배포 성공 (Production)",
+      description: "DaySquare가 TestFlight에 업로드되었습니다.",
+      success: true,
+      fields: [
+        { name: "Version", value: version_info[:version], inline: true },
+        { name: "Build", value: version_info[:build_number], inline: true }
+      ]
+    )
+  rescue StandardError => e
+    send_discord_notification(title: "TestFlight 배포 실패 (Production)", description: e.message, success: false)
+    raise
   end
 
-  desc "TestFlight 배포 (외부 테스터에게 배포)"
-  lane :beta_external do |options|
-    scheme = options[:scheme] || SCHEME_STAGE
-    changelog = options[:changelog] || read_changelog
-    version_info = get_version_info
-    
-    begin
-      if scheme == SCHEME_PROD
-        archive_prod
-      else
-        archive_stage
-      end
-      
-      upload_to_testflight(
-        skip_waiting_for_build_processing: false,
-        distribute_external: true,
-        notify_external_testers: true,
-        changelog: changelog
-      )
-      
-      # Discord 알림 (성공)
-      send_discord_notification(
-        title: "✅ TestFlight 외부 배포 성공",
-        description: "DaySquare 앱이 외부 테스터에게 배포되었습니다.",
-        success: true,
-        fields: [
-          { name: "Version", value: version_info[:version], inline: true },
-          { name: "Build", value: version_info[:build_number], inline: true },
-          { name: "Scheme", value: scheme, inline: true }
-        ]
-      )
-    rescue => ex
-      # Discord 알림 (실패)
-      send_discord_notification(
-        title: "❌ TestFlight 외부 배포 실패",
-        description: "배포 중 오류가 발생했습니다: #{ex.message}",
-        success: false
-      )
-      raise
-    end
-  end
+  # MARK: - App Store
 
-  # MARK: - App Store 배포
-
-  desc "App Store에 배포"
+  desc "App Store 업로드 + 심사 제출"
   lane :release do
     generate
-    
-    # 프로젝트 파일에서 버전 확인
     version_info = get_version_info
-    UI.message("📱 배포 정보:")
-    UI.message("   Version: #{version_info[:version]}")
-    UI.message("   Build: #{version_info[:build_number]}")
-    
-    # Archive 생성
+    UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")
     archive_prod
-    
-    # App Store에 업로드
     upload_to_app_store(
-      skip_metadata: false,
-      skip_screenshots: false,
+      skip_metadata: true,
+      skip_screenshots: true,
       force: true,
-      submit_for_review: false,
+      submit_for_review: true,
       automatic_release: false
     )
   end
 
-  # MARK: - 전체 배포 워크플로우
-
-  desc "새 기능 배포 (빌드 번호 자동 증가 + TestFlight 업로드)"
-  lane :deploy_new_feature do |options|
-    environment = options[:environment] || "stage"
-    changelog = options[:changelog] || read_changelog
-    
-    # 빌드 번호 자동 증가
-    bump_build_number
-    
-    # 현재 버전 정보 출력
-    version_info = get_version_info
-    UI.message("📱 배포 정보:")
-    UI.message("   Version: #{version_info[:version]}")
-    UI.message("   Build: #{version_info[:build_number]}")
-    
-    # TestFlight 배포
-    if environment == "prod"
-      beta_prod(changelog: changelog)
-    else
-      beta_stage(changelog: changelog)
-    end
+  desc "스크린샷만 업로드 (fastlane/screenshots/ JPEG/PNG)"
+  lane :upload_screenshots_only do
+    deliver(
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      force: true,
+      run_precheck_before_submit: false
+    )
+  rescue RuntimeError => e
+    UI.important("첫 버전에서는 'No data'로 실패할 수 있습니다. 스크린샷은 App Store Connect에서 수동 업로드하세요.") if e.message.include?("No data")
+    raise unless e.message.include?("No data")
   end
 
-  desc "새 버전 배포 (버전 문자열 변경 + 빌드 번호 초기화 + TestFlight 업로드)"
+  # MARK: - 배포 워크플로우
+
+  desc "빌드 번호 증가 후 TestFlight 배포 (stage 또는 prod)"
+  lane :deploy_new_feature do |options|
+    env = options[:environment] || "stage"
+    changelog = options[:changelog] || read_changelog
+    bump_build_number
+    version_info = get_version_info
+    UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")
+    env == "prod" ? beta_prod(changelog: changelog) : beta_stage(changelog: changelog)
+  end
+
+  desc "버전 문자열 변경 후 빌드 1로 초기화 + TestFlight 배포"
   lane :deploy_new_version do |options|
     new_version = options[:version]
-    environment = options[:environment] || "stage"
+    env = options[:environment] || "stage"
     changelog = options[:changelog] || read_changelog
-    
-    UI.user_error!("새 버전 번호를 입력해주세요: fastlane deploy_new_version version:\"1.1\"") unless new_version
-    
-    # 버전 문자열 변경
-    bump_version(version: new_version)
-    
-    # 빌드 번호를 1로 초기화
-    set_build_number(build_number: "1")
-    
-    # 현재 버전 정보 출력
-    version_info = get_version_info
-    UI.message("📱 배포 정보:")
-    UI.message("   Version: #{version_info[:version]}")
-    UI.message("   Build: #{version_info[:build_number]}")
-    
-    # TestFlight 배포
-    if environment == "prod"
-      beta_prod(changelog: changelog)
-    else
-      beta_stage(changelog: changelog)
-    end
-  end
-
-  # MARK: - 유틸리티
-
-  desc "프로젝트 정리"
-  lane :clean do
-    clean_tuist
-    Dir.chdir(PROJECT_ROOT) do
-      sh("rm -rf build")
-      sh("rm -rf DerivedData")
-    end
-    sh("rm -rf ~/Library/Developer/Xcode/DerivedData")
-  end
-
-  desc "Discord 웹훅 테스트 (알림이 오는지 확인)"
-  lane :discord_test do
-    webhook_url = ENV["DISCORD_WEBHOOK_URL"]
-    unless webhook_url && !webhook_url.to_s.strip.empty?
-      UI.user_error!("DISCORD_WEBHOOK_URL을 .env.default에 설정한 뒤 다시 시도하세요.")
-    end
-
-    UI.message("Discord 웹훅 테스트 전송 중...")
-    send_discord_notification(
-      title: "DaySquare Fastlane 테스트",
-      description: "Discord 알림이 정상 동작합니다.",
-      success: true,
-      fields: [
-        { name: "앱", value: "DaySquare", inline: true },
-        { name: "테스트", value: "성공", inline: true }
-      ]
-    )
-  end
-
-  desc "코드 사이닝 정보 확인"
-  lane :check_signing do
-    match_sync
-    get_certificates
-    get_provisioning_profile
-  end
-
-  desc "프로젝트 정보 출력"
-  lane :info do
-    workspace_path = File.join(PROJECT_ROOT, WORKSPACE_NAME)
-    
-    # 프로젝트가 생성되어 있지 않으면 생성
-    unless File.exist?(workspace_path)
-      generate
-    end
-    
-    version_info = get_version_info
-    
-    UI.message("📱 DaySquare 프로젝트 정보")
-    UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    UI.message("   App Identifier: #{APP_IDENTIFIER}")
-    UI.message("   Widget Identifier: #{WIDGET_IDENTIFIER}")
-    UI.message("   Version: #{version_info[:version]}")
-    UI.message("   Build Number: #{version_info[:build_number]}")
-    UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-  end
-
-  # MARK: - CI/CD
-
-  desc "CI 환경에서 실행되는 전체 파이프라인"
-  lane :ci do
-    # 의존성 설치
-    install_dependencies
-    
-    # 프로젝트 생성
+    UI.user_error!("version 필요: fastlane deploy_new_version version:\"1.1\"") unless new_version
     generate
-    
-    # 테스트 실행
-    test
-    
-    # 빌드 확인
-    build_dev
+    increment_version_number(version_number: new_version, xcodeproj: APP_PROJECT_PATH)
+    increment_build_number(build_number: "1", xcodeproj: APP_PROJECT_PATH)
+    version_info = get_version_info
+    UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")
+    env == "prod" ? beta_prod(changelog: changelog) : beta_stage(changelog: changelog)
   end
 
-  desc "CD 환경에서 실행되는 배포 파이프라인"
-  lane :cd do |options|
-    environment = options[:environment] || "stage"
-    
-    case environment
-    when "stage"
-      beta_stage
-    when "prod"
-      beta_prod
-    else
-      UI.user_error!("Unknown environment: #{environment}. Use 'stage' or 'prod'")
-    end
+  # MARK: - 유틸
+
+  desc "빌드·DerivedData 정리"
+  lane :clean do
+    Dir.chdir(PROJECT_ROOT) { sh("tuist clean") }
+    sh("rm -rf #{File.join(PROJECT_ROOT, 'build')} #{File.join(PROJECT_ROOT, 'DerivedData')}")
+  end
+
+  desc "버전·번들 ID 등 정보 출력"
+  lane :info do
+    generate unless File.exist?(WORKSPACE_PATH)
+    v = get_version_info
+    UI.message("App: #{APP_IDENTIFIER}")
+    UI.message("Version: #{v[:version]} / Build: #{v[:build_number]}")
   end
 end

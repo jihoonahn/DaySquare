@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane ios match_sync
 ```
 
-Match를 통해 인증서 및 프로비저닝 프로파일 동기화
+인증서·프로비저닝 프로파일 동기화 (읽기 전용)
 
 ### ios match_new
 
@@ -29,7 +29,7 @@ Match를 통해 인증서 및 프로비저닝 프로파일 동기화
 [bundle exec] fastlane ios match_new
 ```
 
-Match를 통해 새로운 인증서 및 프로비저닝 프로파일 생성
+새 인증서·프로비저닝 프로파일 생성
 
 ### ios generate
 
@@ -39,45 +39,13 @@ Match를 통해 새로운 인증서 및 프로비저닝 프로파일 생성
 
 Tuist 프로젝트 생성
 
-### ios install_dependencies
-
-```sh
-[bundle exec] fastlane ios install_dependencies
-```
-
-Tuist 의존성 설치
-
-### ios clean_tuist
-
-```sh
-[bundle exec] fastlane ios clean_tuist
-```
-
-Tuist 프로젝트 정리
-
-### ios build_dev
-
-```sh
-[bundle exec] fastlane ios build_dev
-```
-
-개발 환경 빌드
-
-### ios build_stage
-
-```sh
-[bundle exec] fastlane ios build_stage
-```
-
-스테이징 환경 빌드
-
 ### ios build_prod
 
 ```sh
 [bundle exec] fastlane ios build_prod
 ```
 
-프로덕션 환경 빌드
+프로덕션 IPA 빌드
 
 ### ios test
 
@@ -85,15 +53,7 @@ Tuist 프로젝트 정리
 [bundle exec] fastlane ios test
 ```
 
-모든 테스트 실행
-
-### ios test_scheme
-
-```sh
-[bundle exec] fastlane ios test_scheme
-```
-
-특정 스킴 테스트 실행
+테스트 실행
 
 ### ios bump_build_number
 
@@ -101,39 +61,7 @@ Tuist 프로젝트 정리
 [bundle exec] fastlane ios bump_build_number
 ```
 
-버전 번호 증가 (build number)
-
-### ios set_build_number
-
-```sh
-[bundle exec] fastlane ios set_build_number
-```
-
-버전 번호 설정
-
-### ios bump_version
-
-```sh
-[bundle exec] fastlane ios bump_version
-```
-
-버전 문자열 증가 (version string)
-
-### ios archive_dev
-
-```sh
-[bundle exec] fastlane ios archive_dev
-```
-
-개발 환경 Archive 생성
-
-### ios archive_stage
-
-```sh
-[bundle exec] fastlane ios archive_stage
-```
-
-스테이징 환경 Archive 생성
+빌드 번호만 1 증가
 
 ### ios archive_prod
 
@@ -141,15 +69,15 @@ Tuist 프로젝트 정리
 [bundle exec] fastlane ios archive_prod
 ```
 
-프로덕션 환경 Archive 생성
+프로덕션 Archive 생성
 
-### ios write_changelog
+### ios archive_stage
 
 ```sh
-[bundle exec] fastlane ios write_changelog
+[bundle exec] fastlane ios archive_stage
 ```
 
-릴리즈 노트 작성 (CHANGELOG.txt 파일 생성/수정)
+스테이징 Archive 생성
 
 ### ios beta_stage
 
@@ -157,7 +85,7 @@ Tuist 프로젝트 정리
 [bundle exec] fastlane ios beta_stage
 ```
 
-스테이징 환경 TestFlight 배포
+스테이징 TestFlight 배포
 
 ### ios beta_prod
 
@@ -165,15 +93,7 @@ Tuist 프로젝트 정리
 [bundle exec] fastlane ios beta_prod
 ```
 
-프로덕션 환경 TestFlight 배포
-
-### ios beta_external
-
-```sh
-[bundle exec] fastlane ios beta_external
-```
-
-TestFlight 배포 (외부 테스터에게 배포)
+프로덕션 TestFlight 배포
 
 ### ios release
 
@@ -181,7 +101,15 @@ TestFlight 배포 (외부 테스터에게 배포)
 [bundle exec] fastlane ios release
 ```
 
-App Store에 배포
+App Store 업로드 + 심사 제출
+
+### ios upload_screenshots_only
+
+```sh
+[bundle exec] fastlane ios upload_screenshots_only
+```
+
+스크린샷만 업로드 (fastlane/screenshots/ JPEG/PNG)
 
 ### ios deploy_new_feature
 
@@ -189,7 +117,7 @@ App Store에 배포
 [bundle exec] fastlane ios deploy_new_feature
 ```
 
-새 기능 배포 (빌드 번호 자동 증가 + TestFlight 업로드)
+빌드 번호 증가 후 TestFlight 배포 (stage 또는 prod)
 
 ### ios deploy_new_version
 
@@ -197,7 +125,7 @@ App Store에 배포
 [bundle exec] fastlane ios deploy_new_version
 ```
 
-새 버전 배포 (버전 문자열 변경 + 빌드 번호 초기화 + TestFlight 업로드)
+버전 문자열 변경 후 빌드 1로 초기화 + TestFlight 배포
 
 ### ios clean
 
@@ -205,23 +133,7 @@ App Store에 배포
 [bundle exec] fastlane ios clean
 ```
 
-프로젝트 정리
-
-### ios discord_test
-
-```sh
-[bundle exec] fastlane ios discord_test
-```
-
-Discord 웹훅 테스트 (알림이 오는지 확인)
-
-### ios check_signing
-
-```sh
-[bundle exec] fastlane ios check_signing
-```
-
-코드 사이닝 정보 확인
+빌드·DerivedData 정리
 
 ### ios info
 
@@ -229,23 +141,7 @@ Discord 웹훅 테스트 (알림이 오는지 확인)
 [bundle exec] fastlane ios info
 ```
 
-프로젝트 정보 출력
-
-### ios ci
-
-```sh
-[bundle exec] fastlane ios ci
-```
-
-CI 환경에서 실행되는 전체 파이프라인
-
-### ios cd
-
-```sh
-[bundle exec] fastlane ios cd
-```
-
-CD 환경에서 실행되는 배포 파이프라인
+버전·번들 ID 등 정보 출력
 
 ----
 

@@ -1,4 +1,3 @@
-DaySquare helps you manage your day with alarms, schedules, and more.
+DaySquare helps you own your day.
 
-Customize the app description for App Store. You can write multiple paragraphs.
-Keep it under 4000 characters.
+Set alarms, plan your schedule, and keep everything in one place. With widgets and a simple design, DaySquare stays with you from morning to night—so you can focus on what matters.
