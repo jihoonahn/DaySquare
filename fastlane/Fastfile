@@ -290,6 +290,7 @@ platform :ios do
       screenshots_path: File.join(PROJECT_ROOT, "fastlane", "screenshots"),
       app_rating_config_path: File.join(PROJECT_ROOT, "fastlane", "metadata", "age_rating.json"),
       price_tier: 0,
+      app_review_attachment_file: "",  # 첫 버전 appStoreReviewDetail 없음 시 No data 오류 회피
       force: true,
       submit_for_review: true,
       automatic_release: false,
