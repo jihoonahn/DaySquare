@@ -275,6 +275,13 @@ platform :ios do
     UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")
     archive_prod
 
+    if ENV["CI"] && get_api_key.nil?
+      UI.user_error!(
+        "App Store Connect API Key가 설정되지 않았습니다. " \
+        "GitHub Secrets에 APP_STORE_CONNECT_API_KEY_KEY_ID, APP_STORE_CONNECT_API_KEY_ISSUER_ID, APP_STORE_CONNECT_API_KEY_KEY 를 추가하세요."
+      )
+    end
+
     upload_to_app_store(
       api_key: get_api_key,
       skip_metadata: true,
