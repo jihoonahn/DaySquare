@@ -124,8 +124,7 @@ platform :ios do
   desc "프로덕션 IPA 빌드"
   lane :build_prod do
     if ENV["CI"]
-      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
-      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME)
     end
     generate
     match_sync
@@ -166,8 +165,7 @@ platform :ios do
   desc "프로덕션 Archive 생성"
   lane :archive_prod do
     if ENV["CI"]
-      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
-      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME)
     end
     generate
     match_sync
@@ -193,8 +191,7 @@ platform :ios do
   desc "스테이징 Archive 생성"
   lane :archive_stage do
     if ENV["CI"]
-      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
-      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME)
     end
     generate
     match_sync
