@@ -35,6 +35,16 @@ TEAM_ID = ENV["TEAM_ID"] || "PG5KXQ6FWQ"
 # CI에서 setup_ci와 match가 같은 키체인을 쓰기 위한 이름
 MATCH_KEYCHAIN_NAME = "fastlane_tmp_keychain"
 
+def get_api_key
+  return nil unless ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_KEY"]
+  app_store_connect_api_key(
+    key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+    issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+    key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+    in_house: false
+  )
+end
+
 def read_changelog
   path = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
   return nil unless File.exist?(path)
@@ -221,7 +231,7 @@ platform :ios do
     changelog = options[:changelog] || read_changelog
     version_info = get_version_info
     archive_stage
-    upload_to_testflight(skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
+    upload_to_testflight(api_key: get_api_key, skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
     send_discord_notification(
       title: "TestFlight 배포 성공 (Staging)",
       description: "DaySquare가 TestFlight에 업로드되었습니다.",
@@ -241,7 +251,7 @@ platform :ios do
     changelog = options[:changelog] || read_changelog
     version_info = get_version_info
     archive_prod
-    upload_to_testflight(skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
+    upload_to_testflight(api_key: get_api_key, skip_waiting_for_build_processing: false, distribute_external: false, notify_external_testers: false, changelog: changelog)
     send_discord_notification(
       title: "TestFlight 배포 성공 (Production)",
       description: "DaySquare가 TestFlight에 업로드되었습니다.",
@@ -264,7 +274,9 @@ platform :ios do
     version_info = get_version_info
     UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")
     archive_prod
+
     upload_to_app_store(
+      api_key: get_api_key,
       skip_metadata: true,
       skip_screenshots: true,
       force: true,
