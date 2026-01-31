@@ -15,6 +15,7 @@ struct SettingsFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
+                    .domain(target: "UsersDomain", type: .interface),
                     .shared(target: "Localization"),
                     .shared(target: "Dependency")
                 ]
@@ -24,6 +25,8 @@ struct SettingsFeature: Module {
                 dependencies: [
                     .domain(target: "LocalizationDomain", type: .interface),
                     .domain(target: "NotificationDomain", type: .interface),
+                    .domain(target: "UsersDomain", type: .interface),
+                    .external(name: "RefineUIIcons"),
                     .shared(target: "Localization")
                 ]
             )

@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import AlarmKit
+@preconcurrency import AlarmKit
 import AlarmSchedulesCoreInterface
 import AlarmsDomainInterface
 import Utility
@@ -8,7 +8,7 @@ import AppIntents
 
 // MARK: - AlarmScheduleServiceImpl
 
-public final class AlarmSchedulesServiceImpl: AlarmSchedulesService {
+public final class AlarmSchedulesServiceImpl: AlarmSchedulesService, @unchecked Sendable {
 
     // MARK: - Properties
     private let alarmManager = AlarmManager.shared
