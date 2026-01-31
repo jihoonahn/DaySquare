@@ -32,6 +32,8 @@ SCHEME_STAGE = "DaySquare-stage"
 SCHEME_PROD = "DaySquare-prod"
 EXPORT_OPTIONS_PLIST = "fastlane/ExportOptions.plist"
 TEAM_ID = ENV["TEAM_ID"] || "PG5KXQ6FWQ"
+# CI에서 setup_ci와 match가 같은 키체인을 쓰기 위한 이름
+MATCH_KEYCHAIN_NAME = "fastlane_tmp_keychain"
 
 def read_changelog
   path = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
@@ -97,7 +99,8 @@ platform :ios do
       type: "appstore",
       app_identifier: [APP_IDENTIFIER, WIDGET_IDENTIFIER],
       readonly: true,
-      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"],
+      keychain_name: ENV["CI"] ? MATCH_KEYCHAIN_NAME : nil
     )
   end
 
@@ -120,7 +123,10 @@ platform :ios do
 
   desc "프로덕션 IPA 빌드"
   lane :build_prod do
-    setup_ci(force: true) if ENV["CI"]
+    if ENV["CI"]
+      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+    end
     generate
     match_sync
     build_app(
@@ -159,7 +165,10 @@ platform :ios do
 
   desc "프로덕션 Archive 생성"
   lane :archive_prod do
-    setup_ci(force: true) if ENV["CI"]
+    if ENV["CI"]
+      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+    end
     generate
     match_sync
     build_app(
@@ -183,7 +192,10 @@ platform :ios do
 
   desc "스테이징 Archive 생성"
   lane :archive_stage do
-    setup_ci(force: true) if ENV["CI"]
+    if ENV["CI"]
+      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["MATCH_PASSWORD"]
+      setup_ci(force: true, keychain_name: MATCH_KEYCHAIN_NAME, keychain_password: keychain_password)
+    end
     generate
     match_sync
     build_app(
