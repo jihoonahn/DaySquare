@@ -281,7 +281,8 @@ platform :ios do
       skip_screenshots: true,
       force: true,
       submit_for_review: true,
-      automatic_release: false
+      automatic_release: false,
+      run_precheck_before_submit: false  # API Key로 IAP precheck 미지원
     )
   end
 
