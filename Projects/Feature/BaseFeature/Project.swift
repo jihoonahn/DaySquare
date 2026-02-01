@@ -14,7 +14,8 @@ struct BaseFeature: Module {
                     .shared(target: "Dependency"),
                     .shared(target: "Designsystem"),
                     .shared(target: "Localization"),
-                    .shared(target: "Utility")
+                    .shared(target: "Utility"),
+                    .external(name: "Rex")
                 ]
             )
             Testing(

@@ -16,7 +16,8 @@ public struct Interface: TargetConvertable {
         self.target = target
         self.dependencies = dependencies + [
             .shared(target: "Dependency"),
-            .shared(target: "Utility")
+            .shared(target: "Utility"),
+            .external(name: "Rex")
         ]
     }
 
