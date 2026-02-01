@@ -35,14 +35,38 @@ TEAM_ID = ENV["TEAM_ID"] || "PG5KXQ6FWQ"
 # CI에서 setup_ci와 match가 같은 키체인을 쓰기 위한 이름
 MATCH_KEYCHAIN_NAME = "fastlane_tmp_keychain"
 
+def ci?
+  ENV["CI"] == "true" || ENV["GITHUB_ACTIONS"] == "true"
+end
+
 def get_api_key
-  return nil unless ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_KEY"]
-  app_store_connect_api_key(
-    key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-    issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-    key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-    in_house: false
-  )
+  key_id = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"]
+  issuer_id = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+  return nil unless key_id && issuer_id
+
+  if ci?
+    # CI: GitHub Secrets의 APP_STORE_CONNECT_API_KEY_KEY 사용
+    key_content = ENV["APP_STORE_CONNECT_API_KEY_KEY"]
+    return nil unless key_content
+    return app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_content: key_content,
+      in_house: false
+    )
+  else
+    # 로컬: fastlane/AuthKey_*.p8 또는 api_key.p8 파일 사용
+    key_file = ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"] ||
+      Dir[File.join(__dir__, "AuthKey_*.p8")].first ||
+      File.join(__dir__, "api_key.p8")
+    return nil unless key_file && File.exist?(key_file)
+    return app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_filepath: key_file,
+      in_house: false
+    )
+  end
 end
 
 def read_changelog
@@ -283,7 +307,7 @@ platform :ios do
     end
 
     # 첫 버전: skip_metadata로 appStoreReviewDetail 없음 시 No data 오류 회피
-    # App Store Connect에서 연령등급·가격·데이터수집·심사연락처를 한 번 수동 설정 후 실행
+    # skip_metadata 시 연령등급·가격이 업로드되지 않으므로 submit도 건너뜀
     skip_metadata = ENV["RELEASE_SKIP_METADATA"] == "true"
 
     upload_to_app_store(
@@ -293,9 +317,9 @@ platform :ios do
       metadata_path: File.join(PROJECT_ROOT, "fastlane", "metadata"),
       screenshots_path: File.join(PROJECT_ROOT, "fastlane", "screenshots"),
       app_rating_config_path: skip_metadata ? nil : File.join(PROJECT_ROOT, "fastlane", "metadata", "age_rating.json"),
-      price_tier: skip_metadata ? nil : 0,
+      # price_tier 제거: API 변경으로 availableInNewTerritories/prices 오류 발생. 가격은 App Store Connect에서 수동 설정
       force: true,
-      submit_for_review: true,
+      submit_for_review: false,  # 가격·iPad 스크린샷 등 App Store Connect에서 수동 설정 후 '심사에 제출'
       automatic_release: false,
       run_precheck_before_submit: false,
       submission_information: {
@@ -304,6 +328,8 @@ platform :ios do
         export_compliance_uses_encryption: false
       }
     )
+
+    UI.important("업로드 완료. App Store Connect에서 가격·iPad Pro 스크린샷 확인 후 '심사에 제출' 버튼을 눌러주세요.")
   end
 
   desc "스크린샷만 업로드 (fastlane/screenshots/ JPEG/PNG)"

@@ -49,7 +49,7 @@ jobs:
         id: release
         env:
           DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
-          RELEASE_SKIP_METADATA: "true"  # 첫 버전 No data 오류 회피. App Store Connect 수동 설정 후 "false"로 변경
+          RELEASE_SKIP_METADATA: "false"  # 두 번째 버전부터: 메타데이터+연령등급+가격+심사 자동화
           APP_IDENTIFIER: ${{ secrets.APP_IDENTIFIER }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           FASTLANE_USER: ${{ secrets.APPLE_ID }}
