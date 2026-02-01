@@ -13,6 +13,7 @@ struct Designsystem: Module {
             Sources(
                 name: typeName,
                 destinations: .iOS,
+                product: .framework,
                 dependencies: [
                     .external(name: "RefineUIIcons"),
                     .external(name: "Logging")

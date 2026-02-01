@@ -20,8 +20,8 @@ public struct ToastModifier<ToastContent: View>: ViewModifier {
                     .allowsHitTesting(false)
             }
             .animation(.interactiveSpring(response: 0.45, dampingFraction: 0.85, blendDuration: 0.25), value: isPresented)
-            .onChange(of: isPresented) { visible in
-                handlePresentationChange(isVisible: visible)
+            .onChange(of: isPresented) { _, newValue in
+                handlePresentationChange(isVisible: newValue)
             }
         }
     }
