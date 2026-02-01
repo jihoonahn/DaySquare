@@ -69,6 +69,35 @@ def get_api_key
   end
 end
 
+def bump_build_number_in_sources
+  xcconfig_path = File.join(PROJECT_ROOT, "Configuration", "Shared.xcconfig")
+  app_plist = File.join(PROJECT_ROOT, "Projects", "App", "iOS", "Support", "Info.plist")
+  widget_plist = File.join(PROJECT_ROOT, "Projects", "App", "Widget", "Support", "Info.plist")
+
+  current = "1"
+  if File.exist?(xcconfig_path)
+    content = File.read(xcconfig_path)
+    if m = content.match(/CURRENT_PROJECT_VERSION\s*=\s*(\d+)/)
+      current = m[1]
+    end
+  end
+  next_build = (current.to_i + 1).to_s
+
+  # Shared.xcconfig
+  if File.exist?(xcconfig_path)
+    File.write(xcconfig_path, File.read(xcconfig_path).sub(/CURRENT_PROJECT_VERSION\s*=\s*\d+/, "CURRENT_PROJECT_VERSION = #{next_build}"))
+  end
+  # Info.plist (App, Widget)
+  [app_plist, widget_plist].each do |path|
+    next unless File.exist?(path)
+    content = File.read(path)
+    content = content.sub(/(<key>CFBundleVersion<\/key>\s*<string>)\d+(<\/string>)/, "\\1#{next_build}\\2")
+    File.write(path, content)
+  end
+  UI.success("빌드 번호: #{current} → #{next_build}")
+  next_build
+end
+
 def read_changelog
   path = File.join(PROJECT_ROOT, "fastlane", "CHANGELOG.txt")
   return nil unless File.exist?(path)
@@ -294,6 +323,7 @@ platform :ios do
 
   desc "App Store 업로드 + 심사 제출"
   lane :release do
+    bump_build_number_in_sources unless ENV["RELEASE_SKIP_BUMP"] == "true"
     generate
     version_info = get_version_info
     UI.message("Version: #{version_info[:version]} / Build: #{version_info[:build_number]}")

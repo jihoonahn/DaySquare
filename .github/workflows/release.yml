@@ -10,10 +10,14 @@ jobs:
   release:
     runs-on: macos-15
     timeout-minutes: 60
+    permissions:
+      contents: write  # 빌드 번호 커밋 푸시용
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -64,6 +68,22 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: bundle exec fastlane release
+
+      - name: Commit and push build number bump
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+          git checkout "$DEFAULT_BRANCH"
+          git pull origin "$DEFAULT_BRANCH"
+          git add Configuration/Shared.xcconfig "Projects/App/iOS/Support/Info.plist" "Projects/App/Widget/Support/Info.plist" 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "No version changes to commit"
+          else
+            git commit -m "chore: bump build number for next release [skip ci]"
+            git push origin "$DEFAULT_BRANCH"
+          fi
 
       - name: Show build log on failure
         if: failure()
