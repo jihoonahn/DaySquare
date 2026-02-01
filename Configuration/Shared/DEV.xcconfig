@@ -1,1 +1,2 @@
 #include "../Shared.xcconfig"
+ENABLE_TESTABILITY = YES

@@ -26,7 +26,8 @@ struct LocalizationCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface)
+                    .core(target: typeName, type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Tests(

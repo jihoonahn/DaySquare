@@ -26,7 +26,8 @@ struct AuthCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface)
+                    .core(target: typeName, type: .interface),
+                    .domain(target: "AuthDomain", type: .interface)
                 ]
             )
             Tests(

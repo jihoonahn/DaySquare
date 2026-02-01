@@ -7,7 +7,14 @@ import SettingFeatureInterface
 struct ExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            SettingView(interface: SettingStore(store: Store(initialState: .init(), reducer: .init())))
+            SettingView(
+                interface: SettingStore(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: .init()
+                    )
+                )
+            )
         }
     }
 }

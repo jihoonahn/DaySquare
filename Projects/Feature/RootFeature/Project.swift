@@ -39,6 +39,13 @@ struct RootFeature: Module {
                     .feature(target: typeName, type: .testing)
                 ]
             )
+            UITests(
+                name: typeName,
+                dependencies: [
+                    .feature(target: typeName),
+                    .feature(target: typeName, type: .testing)
+                ]
+            )
         }
     }
 }

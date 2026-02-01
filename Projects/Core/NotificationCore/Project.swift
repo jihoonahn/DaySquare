@@ -26,7 +26,9 @@ struct NotificationCore: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .core(target: typeName, type: .interface)
+                    .core(target: typeName, type: .interface),
+                    .domain(target: "NotificationDomain", type: .interface),
+                    .domain(target: "AlarmsDomain", type: .interface)
                 ]
             )
             Tests(

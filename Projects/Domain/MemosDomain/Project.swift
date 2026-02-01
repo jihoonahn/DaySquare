@@ -10,12 +10,7 @@ struct MemosDomain: Module {
             name: typeName,
             target: .Domain
         ) {
-            Interface(
-                name: typeName,
-                dependencies: [
-                    .domain(target: "BaseDomain")
-                ]
-            )
+            Interface(name: typeName)
         }
     }
 }

@@ -17,9 +17,19 @@ struct BaseFeature: Module {
                     .shared(target: "Utility")
                 ]
             )
-            Tests(name: typeName, dependencies: [
-                .feature(target: typeName)
-            ])
+            Testing(
+                name: typeName,
+                dependencies: [
+                    .feature(target: typeName)
+                ]
+            )
+            Tests(
+                name: typeName,
+                dependencies: [
+                    .feature(target: typeName),
+                    .feature(target: typeName, type: .testing)
+                ]
+            )
         }
     }
 }
