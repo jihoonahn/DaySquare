@@ -282,15 +282,18 @@ platform :ios do
       )
     end
 
+    # 첫 버전: skip_metadata로 appStoreReviewDetail 없음 시 No data 오류 회피
+    # App Store Connect에서 연령등급·가격·데이터수집·심사연락처를 한 번 수동 설정 후 실행
+    skip_metadata = ENV["RELEASE_SKIP_METADATA"] == "true"
+
     upload_to_app_store(
       api_key: get_api_key,
-      skip_metadata: false,
+      skip_metadata: skip_metadata,
       skip_screenshots: false,
       metadata_path: File.join(PROJECT_ROOT, "fastlane", "metadata"),
       screenshots_path: File.join(PROJECT_ROOT, "fastlane", "screenshots"),
-      app_rating_config_path: File.join(PROJECT_ROOT, "fastlane", "metadata", "age_rating.json"),
-      price_tier: 0,
-      app_review_attachment_file: "",  # 첫 버전 appStoreReviewDetail 없음 시 No data 오류 회피
+      app_rating_config_path: skip_metadata ? nil : File.join(PROJECT_ROOT, "fastlane", "metadata", "age_rating.json"),
+      price_tier: skip_metadata ? nil : 0,
       force: true,
       submit_for_review: true,
       automatic_release: false,
