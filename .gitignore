@@ -93,6 +93,8 @@ vendor/bundle
 ### Fastlane ###
 fastlane/.env
 fastlane/.env.*
+fastlane/api_key.p8
+fastlane/AuthKey_*.p8
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
