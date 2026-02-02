@@ -7,7 +7,8 @@ import PackageDescription
     let packageSettings = PackageSettings(
         productTypes: [
             "Rex": .framework,
-            "Network": .staticLibrary
+            "RefineUIIcons": .framework,
+            "Logging": .framework,
         ],
         baseSettings: .settings(
             configurations: [

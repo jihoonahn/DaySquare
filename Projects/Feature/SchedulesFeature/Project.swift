@@ -38,7 +38,8 @@ struct SchedulesFeature: Module {
                     .feature(target: typeName, type: .interface),
                     .domain(target: "SchedulesDomain", type: .interface),
                     .domain(target: "UsersDomain", type: .interface),
-                    .domain(target: "MemosDomain", type: .interface)
+                    .domain(target: "MemosDomain", type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Tests(

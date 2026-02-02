@@ -1,6 +1,5 @@
 import Foundation
 import NotificationDomainInterface
-import AlarmsDomainInterface
 
 public final class NotificationUseCaseImpl: NotificationUseCase {
     
@@ -22,16 +21,7 @@ public final class NotificationUseCaseImpl: NotificationUseCase {
     public func updatePermissions(enabled: Bool) async {
         await repository.updatePermissions(enabled: enabled)
         if !enabled {
-            await repository.clearFallbackNotifications()
             await repository.clearScheduleNotifications()
         }
-    }
-    
-    public func scheduleFallbackNotifications(for alarms: [AlarmsEntity]) async {
-        await repository.scheduleFallbackNotifications(for: alarms)
-    }
-    
-    public func clearFallbackNotifications() async {
-        await repository.clearFallbackNotifications()
     }
 }

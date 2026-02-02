@@ -3,7 +3,6 @@ import Foundation
 import NotificationCore
 import NotificationCoreTesting
 import NotificationDomainInterface
-import AlarmsDomainInterface
 
 struct NotificationCoreTests {
 
@@ -24,19 +23,4 @@ struct NotificationCoreTests {
         #expect(mock.upsertPreferenceCalled == true)
     }
 
-    @Test("NotificationUseCaseImpl scheduleFallbackNotifications 호출 시 repository에 전달")
-    func useCaseScheduleFallbackDelegatesToRepository() async throws {
-        let mock = MockNotificationRepository()
-        let useCase = NotificationUseCaseImpl(repository: mock)
-        await useCase.scheduleFallbackNotifications(for: [])
-        #expect(mock.scheduleFallbackNotificationsCalled == true)
-    }
-
-    @Test("NotificationUseCaseImpl clearFallbackNotifications 호출 시 repository에 전달")
-    func useCaseClearFallbackDelegatesToRepository() async throws {
-        let mock = MockNotificationRepository()
-        let useCase = NotificationUseCaseImpl(repository: mock)
-        await useCase.clearFallbackNotifications()
-        #expect(mock.clearFallbackNotificationsCalled == true)
-    }
 }

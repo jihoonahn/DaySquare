@@ -10,6 +10,7 @@ struct BaseFeature: Module {
         ProjectContainer(name: typeName, target: .Feature) {
             Sources(
                 name: typeName,
+                product: .framework,
                 dependencies: [
                     .shared(target: "Dependency"),
                     .shared(target: "Designsystem"),

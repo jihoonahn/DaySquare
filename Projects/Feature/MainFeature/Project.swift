@@ -31,7 +31,11 @@ struct MainFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing)
+                    .feature(target: typeName, type: .testing),
+                    .feature(target: "HomeFeature"),
+                    .feature(target: "SettingsFeature"),
+                    .feature(target: "HomeFeature", type: .testing),
+                    .feature(target: "SettingsFeature", type: .testing)
                 ]
             )
             Testing(

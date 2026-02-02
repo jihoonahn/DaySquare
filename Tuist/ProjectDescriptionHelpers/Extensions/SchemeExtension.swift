@@ -54,12 +54,17 @@ extension Scheme {
         let archiveAction = ArchiveAction.archiveAction(configuration: target)
         let profileAction = ProfileAction.profileAction(configuration: target)
         let analyzeAction = AnalyzeAction.analyzeAction(configuration: target)
-        
+
+        let runAction: RunAction? = hasExampleTarget
+            ? .runAction(configuration: target, executable: "\(name)Example")
+            : nil
+
         let base = Scheme.scheme(
             name: "\(name)-\(target.rawValue)",
             shared: true,
             buildAction: buildAction,
             testAction: testAction,
+            runAction: runAction,
             archiveAction: archiveAction,
             profileAction: profileAction,
             analyzeAction: analyzeAction

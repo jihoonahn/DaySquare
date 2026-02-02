@@ -14,7 +14,7 @@ struct SplashFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
                 ]
             )
             Interface(
@@ -30,7 +30,8 @@ struct SplashFeature: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Tests(

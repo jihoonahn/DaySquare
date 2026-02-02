@@ -1,7 +1,6 @@
 import Foundation
 import NotificationCoreInterface
 import NotificationDomainInterface
-import AlarmsDomainInterface
 
 // MARK: - Mock NotificationRepository
 public final class MockNotificationRepository: NotificationRepository, @unchecked Sendable {
@@ -9,8 +8,6 @@ public final class MockNotificationRepository: NotificationRepository, @unchecke
     public var loadPreferenceError: Error?
     public var upsertPreferenceCalled = false
     public var updatePermissionsCalled = false
-    public var scheduleFallbackNotificationsCalled = false
-    public var clearFallbackNotificationsCalled = false
     public var clearScheduleNotificationsCalled = false
 
     public init() {}
@@ -26,14 +23,6 @@ public final class MockNotificationRepository: NotificationRepository, @unchecke
 
     public func updatePermissions(enabled: Bool) async {
         updatePermissionsCalled = true
-    }
-
-    public func scheduleFallbackNotifications(for alarms: [AlarmsEntity]) async {
-        scheduleFallbackNotificationsCalled = true
-    }
-
-    public func clearFallbackNotifications() async {
-        clearFallbackNotificationsCalled = true
     }
 
     public func clearScheduleNotifications() async {

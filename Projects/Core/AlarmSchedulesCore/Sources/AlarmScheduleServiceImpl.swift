@@ -206,7 +206,7 @@ public final class AlarmSchedulesServiceImpl: AlarmSchedulesService, @unchecked 
             return .unknown
         }
     }
-    
+
     // MARK: - Private Methods
     
     private func checkAuthorization() async -> Bool {

@@ -3,6 +3,7 @@ import SchedulesFeatureInterface
 import SchedulesDomainInterface
 import UsersDomainInterface
 import MemosDomainInterface
+import LocalizationDomainInterface
 
 // MARK: - Mock SchedulesUseCase
 public final class MockSchedulesUseCaseForFeature: SchedulesUseCase, @unchecked Sendable {
@@ -66,6 +67,19 @@ public final class MockMemosUseCaseForFeature: MemosUseCase, @unchecked Sendable
     public func searchMemos(userId: UUID, keyword: String) async throws -> [MemosEntity] { [] }
     public func getMemosByAlarmId(alarmId: UUID) async throws -> [MemosEntity] { [] }
     public func getMemosByScheduleId(scheduleId: UUID) async throws -> [MemosEntity] { [] }
+}
+
+// MARK: - Mock LocalizationUseCase (for Example app DIContainer)
+public final class MockLocalizationUseCaseForSchedules: LocalizationUseCase, @unchecked Sendable {
+    public init() {}
+    public func loadPreferredLanguage(userId: UUID) async throws -> LocalizationEntity? {
+        LocalizationEntity(languageCode: "ko", languageLabel: "한국어")
+    }
+    public func savePreferredLanguage(userId: UUID, languageCode: String) async throws {}
+    public func fetchLocalizationBundle() -> Bundle { .main }
+    public func fetchAvailableLocalizations() async throws -> [LocalizationEntity] {
+        [LocalizationEntity(languageCode: "ko", languageLabel: "한국어"), LocalizationEntity(languageCode: "en", languageLabel: "English")]
+    }
 }
 
 // MARK: - Test Fixtures

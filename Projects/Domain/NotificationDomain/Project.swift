@@ -10,12 +10,7 @@ struct NotificationDomain: Module {
             name: typeName,
             target: .Domain
         ) {
-            Interface(
-                name: typeName,
-                dependencies: [
-                    .domain(target: "AlarmsDomain", type: .interface)
-                ]
-            )
+            Interface(name: typeName)
         }
     }
 }

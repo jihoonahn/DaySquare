@@ -1,15 +1,5 @@
 import UIKit
-import ActivityKit
-import AlarmKit
 import UserNotifications
-import Dependency
-import SupabaseCoreInterface
-import AlarmsDomainInterface
-import AlarmSchedulesCoreInterface
-import UsersDomainInterface
-import NotificationDomainInterface
-import BaseFeature
-import WidgetKit
 
 final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
@@ -29,11 +19,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         )
         UNUserNotificationCenter.current().setNotificationCategories([alarmCategory])
         
-        Task {
-            let container = DIContainer.shared
-            let notificationUseCase = container.resolve(NotificationUseCase.self)
-            await notificationUseCase.clearFallbackNotifications()
-        }
         return true
     }
     
@@ -43,7 +28,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        handleAlarmNotification(notification: notification)
+        handleNotification(notification: notification)
         completionHandler([.banner, .sound, .badge, .list])
     }
     
@@ -53,53 +38,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        handleAlarmNotification(notification: response.notification)
+        handleNotification(notification: response.notification)
         completionHandler()
     }
     
-    // 알람 Notification 처리
-    private func handleAlarmNotification(notification: UNNotification) {
+    // Notification 처리 (Schedules 전용 - AlarmKit은 Notification 사용 안 함)
+    private func handleNotification(notification: UNNotification) {
         let userInfo = notification.request.content.userInfo
-        
-        // source 확인 (schedule인 경우 별도 처리)
-        if let source = userInfo["source"] as? String, source == "schedule" {
-            handleScheduleNotification(notification: notification)
+        guard let source = userInfo["source"] as? String, source == "schedule" else {
             return
         }
-        
-        // alarmId 추출 (String 또는 UUID 타입 모두 처리)
-        let alarmId: UUID?
-        if let alarmIdString = userInfo["alarmId"] as? String,
-           let parsedUUID = UUID(uuidString: alarmIdString) {
-            alarmId = parsedUUID
-        } else if let alarmIdUUID = userInfo["alarmId"] as? UUID {
-            alarmId = alarmIdUUID
-        } else {
-            return
-        }
-        
-        guard let finalAlarmId = alarmId else {
-            return
-        }
-        
-        // executionId 추출 (String 또는 UUID 타입 모두 처리)
-        let executionId: UUID?
-        if let executionIdString = userInfo["executionId"] as? String,
-           let parsedUUID = UUID(uuidString: executionIdString) {
-            executionId = parsedUUID
-        } else if let executionIdUUID = userInfo["executionId"] as? UUID {
-            executionId = executionIdUUID
-        } else {
-            executionId = nil
-        }
-        
-        Task {
-            await GlobalEventBus.shared.publish(AlarmEvent.triggered(alarmId: finalAlarmId, executionId: executionId))
-        }
-    }
-    
-    // 스케줄 Notification 처리
-    private func handleScheduleNotification(notification: UNNotification) {
         // 스케줄 notification은 단순 알림이므로 추가 처리 없음
     }
  
@@ -121,24 +69,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         }
     }
     
-    func applicationWillTerminate(_ application: UIApplication) {
-        Task {
-            let container = DIContainer.shared
-            let userUseCase = container.resolve(UsersUseCase.self)
-            guard let user = try? await userUseCase.getCurrentUser() else { return }
-            
-            let notificationUseCase = container.resolve(NotificationUseCase.self)
-            guard let preference = try? await notificationUseCase.loadPreference(userId: user.id),
-                  preference.isEnabled else {
-                await notificationUseCase.clearFallbackNotifications()
-                return
-            }
-            
-            let alarmsUseCase = container.resolve(AlarmsUseCase.self)
-            guard let alarms = try? await alarmsUseCase.fetchAll(userId: user.id) else { return }
-            await notificationUseCase.scheduleFallbackNotifications(for: alarms)
-        }
-    }
     
     // MARK: - OAuth URL Handling
     func application(

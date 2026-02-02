@@ -33,7 +33,8 @@ struct LoginFeature: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
+                    .domain(target: "UsersDomain", type: .interface)
                 ]
             )
             Tests(

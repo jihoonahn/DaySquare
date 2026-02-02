@@ -1,7 +1,6 @@
 import Foundation
 import NotificationDomainInterface
 import NotificationCoreInterface
-import AlarmsDomainInterface
 
 public final class NotificationRepositoryImpl: NotificationRepository {
     private let service: NotificationService
@@ -23,14 +22,6 @@ public final class NotificationRepositoryImpl: NotificationRepository {
 
     public func updatePermissions(enabled: Bool) async {
         await service.updatePermissions(enabled: enabled)
-    }
-    
-    public func scheduleFallbackNotifications(for alarms: [AlarmsEntity]) async {
-        await service.scheduleFallbackNotifications(for: alarms)
-    }
-    
-    public func clearFallbackNotifications() async {
-        await service.clearFallbackNotifications()
     }
     
     public func clearScheduleNotifications() async {

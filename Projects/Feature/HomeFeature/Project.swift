@@ -39,7 +39,13 @@ struct HomeFeature: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
+                    .domain(target: "MemosDomain", type: .interface),
+                    .domain(target: "UsersDomain", type: .interface),
+                    .domain(target: "AlarmsDomain", type: .interface),
+                    .domain(target: "SchedulesDomain", type: .interface),
+                    .core(target: "NotificationCore", type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Tests(

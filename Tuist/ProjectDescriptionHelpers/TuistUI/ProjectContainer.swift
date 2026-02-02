@@ -43,26 +43,29 @@ public struct ProjectContainer<Content>: Module where Content: TargetConvertable
         let hasSource = hasSourceTarget ?? targetNames.contains(name)
         let hasTest = hasTestTarget ?? targetNames.contains { $0.contains("Tests") }
 
-        projectModifier.schemes = projectModifier.targets.flatMap {
-            $0.build().product == .app ? [
+        // 스키마는 모듈당 한 번만 생성 (타겟별 중복 생성 시 동일 이름 스키마가 여러 개 생겨 Xcode 크래시 유발)
+        if hasExample {
+            projectModifier.schemes = [
                 Scheme.makeScheme(
                     name: name,
-                    hasExampleTarget: hasExample,
+                    hasExampleTarget: true,
                     hasSourceTarget: hasSource,
                     hasTestTarget: hasTest,
                     target: .dev
                 ),
                 Scheme.makeScheme(
                     name: name,
-                    hasExampleTarget: hasExample,
+                    hasExampleTarget: true,
                     hasSourceTarget: hasSource,
                     hasTestTarget: hasTest,
                     target: .prod
                 )
-            ] : [
+            ]
+        } else {
+            projectModifier.schemes = [
                 Scheme.makeScheme(
                     name: name,
-                    hasExampleTarget: hasExample,
+                    hasExampleTarget: false,
                     hasSourceTarget: hasSource,
                     hasTestTarget: hasTest,
                     target: .dev
