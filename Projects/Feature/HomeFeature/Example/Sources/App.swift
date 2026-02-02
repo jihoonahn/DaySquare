@@ -24,6 +24,7 @@ struct ExampleApp: App {
                             usersUseCase: MockUsersUseCaseForHome(),
                             alarmsUseCase: MockAlarmsUseCaseForHome(),
                             schedulesUseCase: MockSchedulesUseCaseForHome(),
+                            alarmSchedulesUseCase: MockAlarmSchedulesUseCaseForHome(),
                             notificationService: MockNotificationServiceForHome()
                         )
                     )

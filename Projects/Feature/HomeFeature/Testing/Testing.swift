@@ -60,6 +60,16 @@ public final class MockSchedulesUseCaseForHome: SchedulesUseCase, @unchecked Sen
     public func deleteSchedule(id: UUID) async throws {}
 }
 
+// MARK: - Mock AlarmSchedulesUseCase
+public final class MockAlarmSchedulesUseCaseForHome: AlarmSchedulesUseCase, @unchecked Sendable {
+    public init() {}
+    public func scheduleAlarm(_ alarm: AlarmsEntity) async throws {}
+    public func cancelAlarm(_ alarmId: UUID) async throws {}
+    public func updateAlarm(_ alarm: AlarmsEntity) async throws {}
+    public func toggleAlarm(_ alarmId: UUID, isEnabled: Bool) async throws {}
+    public func stopAlarm(_ alarmId: UUID) async throws {}
+}
+
 // MARK: - Mock NotificationService
 public final class MockNotificationServiceForHome: NotificationService, @unchecked Sendable {
     public init() {}

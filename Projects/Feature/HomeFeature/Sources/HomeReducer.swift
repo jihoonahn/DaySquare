@@ -14,6 +14,7 @@ public struct HomeReducer: Reducer {
     private let usersUseCase: UsersUseCase
     private let alarmsUseCase: AlarmsUseCase
     private let schedulesUseCase: SchedulesUseCase
+    private let alarmSchedulesUseCase: AlarmSchedulesUseCase
     private let notificationService: NotificationService
     private let dateProvider: () -> Date
     private let calendar = Calendar.current
@@ -23,6 +24,7 @@ public struct HomeReducer: Reducer {
         usersUseCase: UsersUseCase,
         alarmsUseCase: AlarmsUseCase,
         schedulesUseCase: SchedulesUseCase,
+        alarmSchedulesUseCase: AlarmSchedulesUseCase,
         notificationService: NotificationService,
         dateProvider: @escaping () -> Date = Date.init
     ) {
@@ -30,6 +32,7 @@ public struct HomeReducer: Reducer {
         self.usersUseCase = usersUseCase
         self.alarmsUseCase = alarmsUseCase
         self.schedulesUseCase = schedulesUseCase
+        self.alarmSchedulesUseCase = alarmSchedulesUseCase
         self.notificationService = notificationService
         self.dateProvider = dateProvider
     }
@@ -96,6 +99,14 @@ public struct HomeReducer: Reducer {
             // - 초기 로드는 viewAppear에서 처리
             // - 사용자가 선택한 날짜는 유지되어야 함
             // - appendNextDayData/prependPreviousDayData에서만 변경
+            
+            // 활성화된 알람을 AlarmKit에 등록 (로그인 시 복원)
+            let enabledAlarms = uniqueAlarms.filter { $0.isEnabled }
+            for alarm in enabledAlarms {
+                Task {
+                    try? await alarmSchedulesUseCase.scheduleAlarm(alarm)
+                }
+            }
             
             // 미래 스케줄만 필터링하여 notification 등록
             let now = Date()

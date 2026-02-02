@@ -131,38 +131,33 @@ public class AppDependencies {
             )
         }
         container.register(AlarmsRepository.self) {
-            SupabaseCore.AlarmsRepositoryImpl(
-                alarmsService: container.resolve(AlarmsService.self)
+            AlarmsSyncRepository(
+                remote: SupabaseCore.AlarmsRepositoryImpl(
+                    alarmsService: container.resolve(AlarmsService.self)
+                ),
+                local: SwiftDataCore.AlarmRepositoryImpl(
+                    alarmService: container.resolve(AlarmService.self)
+                )
             )
         }
         container.register(MemosRepository.self) {
-            SupabaseCore.MemosRepositoryImpl(
-                memosService: container.resolve(MemosService.self)
+            MemosSyncRepository(
+                remote: SupabaseCore.MemosRepositoryImpl(
+                    memosService: container.resolve(MemosService.self)
+                ),
+                local: SwiftDataCore.MemoRepositoryImpl(
+                    memoService: container.resolve(MemosService.self)
+                )
             )
         }
         container.register(SchedulesRepository.self) {
-            SupabaseCore.SchedulesRepositoryImpl(
-                schedulesService: container.resolve(SchedulesService.self)
-            )
-        }
-        container.register(UserSettingsRepository.self) {
-            SwiftDataCore.UserSettingsRepositoryImpl(
-                userSettingsService: container.resolve(UserSettingsService.self)
-            )
-        }
-        container.register(AlarmsRepository.self) {
-            SwiftDataCore.AlarmRepositoryImpl(
-                alarmService: container.resolve(AlarmService.self)
-            )
-        }
-        container.register(MemosRepository.self) {
-            SwiftDataCore.MemoRepositoryImpl(
-                memoService: container.resolve(MemosService.self)
-            )
-        }
-        container.register(SchedulesRepository.self) {
-            SwiftDataCore.ScheduleRepositoryImpl(
-                schedulesService: container.resolve(SchedulesService.self)
+            SchedulesSyncRepository(
+                remote: SupabaseCore.SchedulesRepositoryImpl(
+                    schedulesService: container.resolve(SchedulesService.self)
+                ),
+                local: SwiftDataCore.ScheduleRepositoryImpl(
+                    schedulesService: container.resolve(SchedulesService.self)
+                )
             )
         }
         container.register(AlarmSchedulesRepository.self) {

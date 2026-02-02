@@ -33,6 +33,7 @@ public extension HomeFactoryImpl {
             usersUseCase: container.resolve(UsersUseCase.self),
             alarmsUseCase: container.resolve(AlarmsUseCase.self),
             schedulesUseCase: container.resolve(SchedulesUseCase.self),
+            alarmSchedulesUseCase: container.resolve(AlarmSchedulesUseCase.self),
             notificationService: container.resolve(NotificationService.self)
         )
         let store = Store<HomeReducer>(
@@ -49,6 +50,7 @@ public extension HomeFactoryImpl {
             usersUseCase: container.resolve(UsersUseCase.self),
             alarmsUseCase: container.resolve(AlarmsUseCase.self),
             schedulesUseCase: container.resolve(SchedulesUseCase.self),
+            alarmSchedulesUseCase: container.resolve(AlarmSchedulesUseCase.self),
             notificationService: container.resolve(NotificationService.self)
         )
         let store = Store<HomeReducer>(
