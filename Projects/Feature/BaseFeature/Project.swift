@@ -22,7 +22,8 @@ struct BaseFeature: Module {
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName)
+                    .feature(target: typeName),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Tests(

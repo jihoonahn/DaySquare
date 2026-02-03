@@ -32,16 +32,18 @@ struct MainFeature: Module {
                 dependencies: [
                     .feature(target: typeName),
                     .feature(target: typeName, type: .testing),
-                    .feature(target: "HomeFeature"),
-                    .feature(target: "SettingsFeature"),
-                    .feature(target: "HomeFeature", type: .testing),
-                    .feature(target: "SettingsFeature", type: .testing)
+                    .feature(target: "BaseFeature", type: .sources),
+                    .core(target: "LocalizationCore"),
+                    .core(target: "LocalizationCore", type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
+                    .feature(target: "HomeFeature", type: .interface),
+                    .feature(target: "SettingsFeature", type: .interface)
                 ]
             )
             Tests(

@@ -2,37 +2,38 @@ import SwiftUI
 import Rex
 import MainFeature
 import MainFeatureInterface
-import HomeFeature
-import SettingsFeature
-import HomeFeatureTesting
-import SettingsFeatureTesting
+import MainFeatureTesting
+import HomeFeatureInterface
+import SettingsFeatureInterface
 import Dependency
 import LocalizationDomainInterface
-import NotificationDomainInterface
-import UsersDomainInterface
-import MemosDomainInterface
-import AlarmsDomainInterface
-import SchedulesDomainInterface
-import NotificationCoreInterface
+import LocalizationCoreInterface
+import LocalizationCore
 
 @main
 struct ExampleApp: App {
     init() {
         let container = DIContainer.shared
-        container.register(UsersUseCase.self) { MockUsersUseCaseForHome() }
-        container.register(LocalizationUseCase.self) { MockLocalizationUseCaseForSettings() }
-        container.register(NotificationUseCase.self) { MockNotificationUseCaseForSettings() }
-        container.register(MemosUseCase.self) { MockMemosUseCaseForHome() }
-        container.register(AlarmsUseCase.self) { MockAlarmsUseCaseForHome() }
-        container.register(SchedulesUseCase.self) { MockSchedulesUseCaseForHome() }
-        container.register(NotificationService.self) { MockNotificationServiceForHome() }
-        container.register(HomeFactory.self) { HomeFactoryImpl.create() }
-        container.register(SettingFactory.self) { SettingFactoryImpl.create() }
+        container.register(LocalizationService.self) { LocalizationCore.LocalizationServiceImpl() }
+        container.register(LocalizationRepository.self) {
+            LocalizationCore.LocalizationRepositoryImpl(service: container.resolve(LocalizationService.self))
+        }
+        container.register(LocalizationUseCase.self) {
+            LocalizationCore.LocalizationUseCaseImpl(repository: container.resolve(LocalizationRepository.self))
+        }
+        container.register(HomeFactory.self) { MockHomeFactory() }
+        container.register(SettingFactory.self) { MockSettingFactory() }
     }
 
     var body: some Scene {
         WindowGroup {
-            MainView(interface: MainStore(store: Store(initialState: .init(), reducer: .init())))
+            MainView(
+                interface: MainStore(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: .init())
+                )
+            )
         }
     }
 }

@@ -1,14 +1,16 @@
 import SwiftUI
 import Rex
-import SettingsFeature
-import SettingsFeatureInterface
-import SettingsFeatureTesting
+import RootFeature
+import RootFeatureInterface
+import RootFeatureTesting
+import SplashFeatureInterface
+import LoginFeatureInterface
+import MainFeatureInterface
 import Dependency
+import UsersDomainInterface
 import LocalizationDomainInterface
 import LocalizationCoreInterface
 import LocalizationCore
-import NotificationDomainInterface
-import UsersDomainInterface
 
 @main
 struct ExampleApp: App {
@@ -21,21 +23,19 @@ struct ExampleApp: App {
         container.register(LocalizationUseCase.self) {
             LocalizationCore.LocalizationUseCaseImpl(repository: container.resolve(LocalizationRepository.self))
         }
-        container.register(NotificationUseCase.self) { MockNotificationUseCaseForSettings() }
-        container.register(UsersUseCase.self) { MockUsersUseCaseForSettings() }
+        container.register(UsersUseCase.self) { MockUsersUseCase() }
+        container.register(SplashFactory.self) { MockSplashFactory() }
+        container.register(LoginFactory.self) { MockLoginFactory() }
+        container.register(MainFactory.self) { MockMainFactory() }
     }
 
     var body: some Scene {
         WindowGroup {
-            SettingView(
-                interface: SettingStore(
+            RootView(
+                interface: RootStore(
                     store: Store(
                         initialState: .init(),
-                        reducer: SettingReducer(
-                            usersUseCase: MockUsersUseCaseForSettings(),
-                            localizationUseCase: DIContainer.shared.resolve(LocalizationUseCase.self),
-                            notificationUseCase: MockNotificationUseCaseForSettings()
-                        )
+                        reducer: .init(usersUseCase: DIContainer.shared.resolve(UsersUseCase.self))
                     )
                 )
             )

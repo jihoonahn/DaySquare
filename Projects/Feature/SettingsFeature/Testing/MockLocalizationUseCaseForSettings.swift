@@ -1,7 +1,7 @@
 import Foundation
 import LocalizationDomainInterface
 
-// MARK: - Mock LocalizationUseCase
+// MARK: - Mock LocalizationUseCase (SettingsFeature Tests용)
 public final class MockLocalizationUseCaseForSettings: LocalizationUseCase, @unchecked Sendable {
     public init() {}
 

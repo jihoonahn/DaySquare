@@ -30,6 +30,7 @@ public struct Example: TargetConvertable {
                 "ENABLE_TESTS": .boolean(true)
             ]),
             sources: .example,
+            resources: ["Example/Resources/**"],
             dependencies: dependencies,
             settings: .settings(
                 base: env.baseSettings,

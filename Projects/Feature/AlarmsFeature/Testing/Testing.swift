@@ -18,8 +18,8 @@ public final class MockAlarmsUseCaseForFeature: AlarmsUseCase, @unchecked Sendab
     }
     public func create(_ alarm: AlarmsEntity) async throws {}
     public func update(_ alarm: AlarmsEntity) async throws {}
-    public func delete(alarmId: UUID) async throws {}
-    public func toggle(alarmId: UUID, isEnabled: Bool) async throws {}
+    public func delete(id: UUID) async throws {}
+    public func toggle(id: UUID, isEnabled: Bool) async throws {}
 }
 
 // MARK: - Mock AlarmSchedulesUseCase

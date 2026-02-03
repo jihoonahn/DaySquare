@@ -26,10 +26,25 @@ struct RootFeature: Module {
                     .feature(target: "MainFeature", type: .interface)
                 ]
             )
+            Example(
+                name: typeName,
+                dependencies: [
+                    .feature(target: typeName),
+                    .feature(target: typeName, type: .testing),
+                    .feature(target: "BaseFeature", type: .sources),
+                    .core(target: "LocalizationCore"),
+                    .core(target: "LocalizationCore", type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
+                ]
+            )
             Testing(
                 name: typeName,
                 dependencies: [
-                    .feature(target: typeName, type: .interface)
+                    .feature(target: typeName, type: .interface),
+                    .feature(target: "SplashFeature", type: .interface),
+                    .feature(target: "LoginFeature", type: .interface),
+                    .feature(target: "MainFeature", type: .interface),
+                    .domain(target: "UsersDomain", type: .interface)
                 ]
             )
             Tests(

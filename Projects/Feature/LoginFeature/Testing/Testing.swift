@@ -2,6 +2,7 @@ import Foundation
 import LoginFeatureInterface
 import UsersDomainInterface
 import LocalizationDomainInterface
+import LocalizationCore
 
 // MARK: - Mock UsersUseCase
 public final class MockUsersUseCaseForLogin: UsersUseCase, @unchecked Sendable {
@@ -14,7 +15,14 @@ public final class MockUsersUseCaseForLogin: UsersUseCase, @unchecked Sendable {
     public func updateUser(_ user: UsersEntity) async throws {}
     public func getCurrentUser() async throws -> UsersEntity? {
         if let error = getCurrentUserError { throw error }
-        return getCurrentUserResult
+        return getCurrentUserResult ?? UsersEntity(
+            id: UUID(),
+            provider: "example",
+            email: "example@test.com",
+            displayName: "Example",
+            createdAt: Date(),
+            updatedAt: Date()
+        )
     }
     public func deleteUser() async throws {}
     public func logout() async throws {}

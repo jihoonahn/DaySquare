@@ -27,7 +27,11 @@ struct LoginFeature: Module {
                 name: typeName,
                 dependencies: [
                     .feature(target: typeName),
-                    .feature(target: typeName, type: .testing)
+                    .feature(target: typeName, type: .testing),
+                    .feature(target: "BaseFeature", type: .sources),
+                    .core(target: "LocalizationCore"),
+                    .core(target: "LocalizationCore", type: .interface),
+                    .domain(target: "LocalizationDomain", type: .interface)
                 ]
             )
             Testing(

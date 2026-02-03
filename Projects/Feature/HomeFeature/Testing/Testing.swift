@@ -6,6 +6,7 @@ import AlarmsDomainInterface
 import SchedulesDomainInterface
 import NotificationCoreInterface
 import LocalizationDomainInterface
+import LocalizationCore
 
 // MARK: - Mock UsersUseCase
 public final class MockUsersUseCaseForHome: UsersUseCase, @unchecked Sendable {
@@ -46,8 +47,8 @@ public final class MockAlarmsUseCaseForHome: AlarmsUseCase, @unchecked Sendable 
     public func fetchAll(userId: UUID) async throws -> [AlarmsEntity] { [] }
     public func create(_ alarm: AlarmsEntity) async throws {}
     public func update(_ alarm: AlarmsEntity) async throws {}
-    public func delete(alarmId: UUID) async throws {}
-    public func toggle(alarmId: UUID, isEnabled: Bool) async throws {}
+    public func delete(id: UUID) async throws {}
+    public func toggle(id: UUID, isEnabled: Bool) async throws {}
 }
 
 // MARK: - Mock SchedulesUseCase
