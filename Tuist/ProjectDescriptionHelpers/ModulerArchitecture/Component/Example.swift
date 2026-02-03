@@ -30,7 +30,9 @@ public struct Example: TargetConvertable {
                 "ENABLE_TESTS": .boolean(true)
             ]),
             sources: .example,
-            resources: ["Example/Resources/**"],
+            resources: [
+                "../../App/iOS/Resources/**",
+            ],
             dependencies: dependencies,
             settings: .settings(
                 base: env.baseSettings,
