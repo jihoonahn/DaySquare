@@ -1,7 +1,5 @@
 import UIKit
 import UserNotifications
-import Dependency
-import SupabaseCoreInterface
 
 final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
@@ -69,17 +67,5 @@ final class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationC
         default:
             return true
         }
-    }
-    
-    
-    // MARK: - OAuth URL Handling (Google 등 리다이렉트 콜백)
-    func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
-        let supabaseService = DIContainer.shared.resolve(SupabaseService.self) 
-        supabaseService.client.auth.handle(url)
-        return true
     }
 }
