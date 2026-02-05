@@ -9,35 +9,27 @@ public final class AppleOauthServiceImpl: AppleOauthService {
     // Delegate를 강한 참조로 유지하여 메모리에서 해제되지 않도록 함
     private var currentDelegate: AppleSignInDelegate?
     
-    public init() {
-    }
+    public init() {}
     
     public func signInWithApple() async throws -> AppleOauthEntity {
-        #if targetEnvironment(simulator)
-        throw AuthError.simulatorNotSupported
-        #endif
-        
-        // Apple Sign In Native SDK 사용
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         
-        // Async/await를 위한 continuation 사용
         let authorization = try await withCheckedThrowingContinuation { continuation in
             let delegate = AppleSignInDelegate { [weak self] result in
-                // 완료 후 delegate 해제
                 self?.currentDelegate = nil
                 continuation.resume(with: result)
             }
-            
-            // Delegate를 인스턴스 변수로 유지하여 메모리에서 해제되지 않도록 함
             self.currentDelegate = delegate
-            
             authorizationController.delegate = delegate
             authorizationController.presentationContextProvider = delegate
-            authorizationController.performRequests()
+            // iPad 포함 모든 기기에서 시트가 올바르게 표시되도록 메인 스레드에서 수행
+            DispatchQueue.main.async {
+                authorizationController.performRequests()
+            }
         }
         
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
@@ -102,11 +94,16 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
     }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first else {
+        // iPad(멀티 윈도우 등)에서 활성 창을 사용하도록 key window 우선 사용
+        let scene = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+        guard let windowScene = scene ?? UIApplication.shared.connectedScenes.first as? UIWindowScene else {
             return UIWindow(frame: UIScreen.main.bounds)
         }
-        return window
+        let window = windowScene.windows.first { $0.isKeyWindow }
+            ?? windowScene.windows.first
+        return window ?? UIWindow(frame: UIScreen.main.bounds)
     }
 }
 

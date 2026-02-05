@@ -3,6 +3,7 @@ import SwiftData
 import RootFeatureInterface
 import Dependency
 import SwiftDataCoreInterface
+import SupabaseCoreInterface
 import ActivityKit
 
 @main
@@ -26,8 +27,12 @@ struct DaySquareApp: App {
                         MemosModel.self,
                         SchedulesModel.self,
                         UserSettingsModel.self
-                ]
-            )
+                    ]
+                )
+                .onOpenURL { url in
+                    let supabase = DIContainer.shared.resolve(SupabaseService.self)
+                    supabase.client.auth.handle(url)
+                }
         }
     }
 }

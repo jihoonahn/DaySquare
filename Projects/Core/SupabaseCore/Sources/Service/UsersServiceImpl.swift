@@ -20,9 +20,13 @@ public final class UsersServiceImpl: UsersService {
     }
 
     public func signInWithGoogle() async throws -> UsersEntity {
+        // URL Scheme은 Info.plist의 CFBundleURLSchemes(daysquare)와 동일해야 함
+        guard let redirectURL = URL(string: "daysquare://") else {
+            throw NSError(domain: "UsersService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid redirect URL"])
+        }
         let response = try await client.auth.signInWithOAuth(
             provider: .google,
-            redirectTo: URL(string: "com.googleusercontent.apps.868566453670-5qc711tkdesbaagsdtt0lok38jotlutc:/auth")
+            redirectTo: redirectURL
         )
         let authUser = response.user
 
