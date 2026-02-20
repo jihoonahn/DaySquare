@@ -15,6 +15,9 @@ struct HomeFeature: Module {
                 dependencies: [
                     .feature(target: "BaseFeature", type: .sources),
                     .feature(target: typeName, type: .interface),
+                    .feature(target: "AlarmsFeature", type: .interface),
+                    .feature(target: "SchedulesFeature", type: .interface),
+                    .core(target: "NotificationCore", type: .interface),
                     .shared(target: "Localization"),
                     .shared(target: "Dependency")
                 ]
